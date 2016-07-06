@@ -89,12 +89,19 @@ safe than sorry.-->
   	</character>
   
   	<character class='karkat' x='420' y='500'>
-  		<action class='beKarkat'/>
   		<action command='talk' name='Talk.'>
   			<args>
   				@meenah_talk Hey what're you doing in my sample. 
-  				@meenah_angrytalk This is my sample I swear to god I will fight you. Get out. Get ouuuuuut.
-  				@karkat_talk what
+  				@meenah_angrytalk This is a long lorem ibsum on the left hand side Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus odio felis, a efficitur sapien dapibus non. Morbi lobortis elementum risus ac semper. Quisque sed odio faucibus, faucibus mi semper, rutrum quam. Cras et efficitur lorem. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam pellentesque augue ac egestas interdum. In ut consequat nibh. Nulla ac mollis lacus. Morbi quis orci velit. Sed augue lectus, posuere venenatis interdum eu, rhoncus quis tellus. Nullam ullamcorper lorem in magna luctus placerat. Nulla vel purus est. In consequat nulla ac varius commodo. In facilisis nisi et commodo porta. Maecenas posuere, tellus vel imperdiet vulputate, augue nulla vulputate nisi, sit amet bibendum arcu nulla eget lectus.
+
+Nulla vitae risus eget libero faucibus accumsan. Duis et imperdiet orci, eu egestas purus. Phasellus vel dolor et sapien mollis vehicula eget vitae ligula. Aliquam tempor nec magna a semper. Ut tristique in magna nec suscipit. Proin sapien tortor, maximus ac tellus eu, porttitor pharetra mauris. Praesent nibh neque, rhoncus eget orci id, ultrices pharetra quam. Sed eu commodo tortor, vel commodo orci. Ut eu sem in nunc egestas egestas. Mauris ullamcorper dignissim lectus, ac malesuada quam tempus quis.
+
+Aenean nunc magna, luctus sit amet venenatis ac, fringilla quis nisl. Integer ex libero, consequat nec justo id, pharetra ultrices nulla. Aliquam sollicitudin diam auctor leo ultrices, ut iaculis leo consequat. Nulla feugiat arcu in sollicitudin mattis. Curabitur vitae egestas justo. Morbi egestas eu mi vel luctus. Praesent convallis orci vel elementum aliquet. Mauris sed erat in est vehicula varius a ut nisl.
+
+Aliquam faucibus purus dignissim, condimentum sem sit amet, mollis est. In in lacinia enim, quis vehicula tortor. Integer augue orci, finibus ac volutpat eget, maximus vitae nisi. Nulla efficitur commodo nulla a cursus. Curabitur porttitor lobortis nulla sed ultrices. Morbi facilisis nec turpis in efficitur. Aliquam ultrices in nibh in pulvinar. Vivamus at egestas enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent ut odio in nisl lobortis fermentum. Nunc a massa sit amet ligula aliquam accumsan et a elit.
+
+Vivamus faucibus fringilla sem nec mattis. Nulla scelerisque dolor et leo laoreet imperdiet. Maecenas dignissim suscipit venenatis. Nam ac venenatis dolor, a sagittis felis. Nam porttitor magna a quam lobortis, sit amet eleifend mi suscipit. Nunc ullamcorper nec mi eu tempus. Donec blandit scelerisque feugiat. Phasellus vel aliquam sem. Duis sed diam vitae risus dictum ultricies at sit amet purus. Cras dictum molestie erat ac pharetra. Sed convallis mi lectus, vitae volutpat leo rutrum lobortis. Curabitur est magna, tincidunt ut pellentesque id, maximus eu nisl. 
+  				@karkat_talk this is a long lorem ibsum on the right hand side
   				@meenah_annoyed ouuuuuuut
   			</args>
   		</action>
