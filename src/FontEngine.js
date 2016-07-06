@@ -33,7 +33,7 @@ Sburb.FontEngine = function(text){
 
 	//This is intended for monospace fonts
 	//this.font-family 
-	this.font = "bold 14px SburbFont";
+	this.font = "18px SburbFont";
 	this.color = "#000000";
 	this.text = typeof text == "string"?text:"";
 	this.x=0;
