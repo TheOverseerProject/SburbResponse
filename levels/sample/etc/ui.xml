@@ -6,10 +6,11 @@
 	what fonts the system should try to use. The first one it finds that works it
 	will use -->
   <asset name='SburbFont' type='font'>
+  	url: fonts/EBGaramondSC12-Regular.otf,
   	local:Courier New Bold, 
   	local:Courier New, 
-    url: fonts/cour.woff,
-    url: fonts/cour.ttf,
+    	url: fonts/cour.woff,
+    	url: fonts/cour.ttf,
   	weight:bold
   </asset>
   
@@ -52,9 +53,9 @@
   	
   	<!-- here we configure all the parameters used by the dialoger system. This are
   	pretty reasonable defaults, but you can mess around with them if you want -->
-		<dialoger alertPos="56,120" talkPosRight="20,120" talkPosLeft="90,120" hiddenPos="-1000,120"
-			spriteStartLeft="-300,450" spriteEndLeft="100,450" spriteStartRight="950,450" spriteEndRight="550,450"
-			alertTextDimensions="30,30,450,220" leftTextDimensions="150,30,350,220" rightTextDimensions="30,30,350,220"
+		<dialoger alertPos="100,120" talkPosRight="100,120" talkPosLeft="100,120" hiddenPos="-1000,120"
+			spriteStartLeft="-300,650" spriteEndLeft="200,650" spriteStartRight="1456,650" spriteEndRight="956,650"
+			alertTextDimensions="50,50,800,400" leftTextDimensions="244,50,622,400" rightTextDimensions="50,50,622,400"
 			box="dialogBox">
 		</dialoger>
 </hud>
