@@ -44,6 +44,7 @@ Sburb.AssetManager = function() {
         "ogg": "audio/ogg",
         "ttf": "application/x-font-ttf",
         "woff": "application/x-font-woff",
+        "otf": "application/x-font-opentype",
         "swf": "application/x-shockwave-flash",
         "flv": "application/x-shockwave-flash"
     };
@@ -814,6 +815,8 @@ Sburb.createFontAsset = function(name, sources){
                     format = "truetype";
                 }else if(extension=="woff"){
                     format = "woff";
+                }else if(extension=="otf"){
+                    format = "opentype";
                 }else if(extension=="svg"){
                     format = "svg";
                 }
