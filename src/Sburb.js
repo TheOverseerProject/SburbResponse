@@ -327,7 +327,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     Sburb.Bins["gif"] = gifDiv;
     
     // Set default dimensions
-    Sburb.setDimensions(650,450);
+    Sburb.setDimensions(1156,650);
     
 	Sburb.stage = Sburb.Stage.getContext("2d");
 	Sburb.Stage.onblur = _onblur;
