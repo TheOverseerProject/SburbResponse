@@ -271,7 +271,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y)){
 			Sburb.dialoger.nudge();
 		} else {
-+			_onkeydown(mockSpace);
+			_onkeydown(mockSpace);
  		}
 	});
 
@@ -443,7 +443,7 @@ var _onkeydown = function(e){
     if(Sburb.updateLoop && !Sburb.inputDisabled) { // Make sure we are loaded before trying to do things
 	    if(Sburb.chooser.choosing){
 		Sburb.performAction(Sburb.chooser.choices[0]);
-+		Sburb.chooser.choosing = false;
+		Sburb.chooser.choosing = false;
 	    }else if(Sburb.dialoger.talking){
 		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space]){
 			    Sburb.dialoger.nudge();
