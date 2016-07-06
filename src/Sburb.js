@@ -265,11 +265,14 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 				}
 		}
 		var point = tapCoords(e,gameCanvas);
+		var mockSpace = {keyCode:Sburb.Keys.space};
 		Sburb.Mouse.x = point.x;
 		Sburb.Mouse.y = point.y;
 		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y)){
 			Sburb.dialoger.nudge();
-		}
+		} else {
++			_onkeydown(mockSpace);
+ 		}
 	});
 
 	//Touch events have the side effect of being able to click and drag with the mouse to move the sprite
@@ -439,16 +442,8 @@ function draw(){
 var _onkeydown = function(e){
     if(Sburb.updateLoop && !Sburb.inputDisabled) { // Make sure we are loaded before trying to do things
 	    if(Sburb.chooser.choosing){
-		    if(e.keyCode == Sburb.Keys.down || e.keyCode==Sburb.Keys.s){
-			    Sburb.chooser.nextChoice();
-		    }
-		    if(e.keyCode == Sburb.Keys.up || e.keyCode==Sburb.Keys.w){
-			    Sburb.chooser.prevChoice();
-		    }
-		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space]){
-			    Sburb.performAction(Sburb.chooser.choices[Sburb.chooser.choice]);
-			    Sburb.chooser.choosing = false;
-		    }
+		Sburb.performAction(Sburb.chooser.choices[0]);
++		Sburb.chooser.choosing = false;
 	    }else if(Sburb.dialoger.talking){
 		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space]){
 			    Sburb.dialoger.nudge();
@@ -460,12 +455,9 @@ var _onkeydown = function(e){
 			    for(var i=0;i<queries.length;i++){
 				    Sburb.chooser.choices = Sburb.curRoom.queryActions(Sburb.char,queries[i].x,queries[i].y);
 				    if(Sburb.chooser.choices.length>0){
-					    break;
+				   	Sburb.performAction(Sburb.chooser.choices[0]); 
+					break;
 				    }
-			    }
-			    if(Sburb.chooser.choices.length>0){
-				    Sburb.chooser.choices.push(new Sburb.Action("cancel","cancel","Cancel."));
-				    beginChoosing();
 			    }
 		    }
 	    }
