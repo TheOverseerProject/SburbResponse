@@ -240,8 +240,6 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     
 	var gameCanvas = document.createElement("canvas");
     gameCanvas.id = "SBURBStage";
-    gameCanvas.onmousedown = function(e) { Sburb.onMouseDown(e,this); };
-    gameCanvas.onmouseup = function(e) { Sburb.onMouseUp(e,this); };
     gameCanvas.onmousemove = function(e) { Sburb.onMouseMove(e,this); };
     gameCanvas.tabIndex = 0;
 	gameCanvas.scaleX = gameCanvas.scaleY = 3;
@@ -251,7 +249,62 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	gameCanvas.fadeRate = 0.1;
     gameCanvas.innerText = "ERROR: Your browser is too old to display this content!";
     gameDiv.appendChild(gameCanvas);
-    
+
+
+	var hammertime= new Hammer(gameCanvas);
+
+	//Tap and click events are interlinked
+	hammertime.on('tap', function(e){
+		if(!Sburb.updateLoop) return; // Make sure we are loaded before trying to do things
+		Sburb.Mouse.down = true; //gets set to false in Sburb.SpriteButton.prototype.updateMouse
+		if(Sburb.engineMode=="strife" && hasControl()){
+				Sburb.chooser.choices = Sburb.curRoom.queryActionsVisual(Sburb.char,Sburb.Stage.x+Sburb.Mouse.x,Sburb.Stage.y+Sburb.Mouse.y);
+				if(Sburb.chooser.choices.length>0){
+					Sburb.chooser.choices.push(new Sburb.Action("cancel","cancel","cancel"));
+					beginChoosing();
+				}
+		}
+		var point = tapCoords(e,gameCanvas);
+		Sburb.Mouse.x = point.x;
+		Sburb.Mouse.y = point.y;
+		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y)){
+			Sburb.dialoger.nudge();
+		}
+	});
+
+	//Touch events have the side effect of being able to click and drag with the mouse to move the sprite
+	//Since older devices emulate mouse clicks as opposed to using some sort of touch API, we want this enabled.
+	//Also laptops with touch screens would be a pain to deal with
+	hammertime.on('press', function(e){
+		if(hasControl())
+			mockKeyConfig(e);
+	});
+
+	hammertime.on('pan', function(e){
+		if(hasControl()){
+			purgeKeys();
+			mockKeyConfig(e);
+		}
+	});
+
+	hammertime.on('pressup panend swipe', function(e) {
+		if(hasControl())
+			purgeKeys();
+	});
+
+	//Mocks up key codes to send to the action queue if moving with touch/mouse input
+	function mockKeyConfig(e){
+		if(Sburb.updateLoop && !Sburb.inputDisabled) { // Make sure we are loaded before trying to do things.
+			var point = tapCoords(e,gameCanvas);
+			var mockKeyCode = getQ(point.x,point.y);
+			for(var i=0; i<mockKeyCode.length; i++){
+				if(!Sburb.pressed[mockKeyCode[i]])
+					Sburb.pressedOrder.push(mockKeyCode[i]);
+				Sburb.pressed[mockKeyCode[i]] = true;
+			}
+		}
+	};
+
 	var mapCanvas = document.createElement("canvas");
     mapCanvas.id = "SBURBMapCanvas";
     mapCanvas.width = 1;
@@ -288,6 +341,12 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	Sburb.pressed = {};
 	Sburb.pressedOrder = [];
     
+
+	//do not change the order of this array. Used for key mockup for touch/mouse events
+	Sburb.quadrantAlign = [[Sburb.Keys.left,Sburb.Keys.up], [Sburb.Keys.left], [Sburb.Keys.left,Sburb.Keys.down],
+		[Sburb.Keys.up], [Sburb.Keys.down], [Sburb.Keys.right,Sburb.Keys.up],[Sburb.Keys.right],
+		[Sburb.Keys.right,Sburb.Keys.down]];
+
     Sburb.loadSerialFromXML(levelName); // comment out this line and
     //loadAssets();                        // uncomment these two lines, to do a standard hardcode load
     //_hardcode_load = 1;
@@ -302,6 +361,13 @@ Sburb.setDimensions = function(width, height) {
         Sburb.Container.style.height = height+"px";
         Sburb.Stage.height = height;
     }
+
+	//These are for comparing relative point distance for mouse/touch movement
+	//do not change the order of this array
+	Sburb.pointArray = [[0,0],[0,Sburb.Stage.height/2],[0,Sburb.Stage.height],[Sburb.Stage.width/2,0],
+		[Sburb.Stage.width/2,Sburb.Stage.height],[Sburb.Stage.width,0],[Sburb.Stage.width,Sburb.Stage.height/2],
+		[Sburb.Stage.width,Sburb.Stage.height]];
+	Sburb.maxStaticScreen = Sburb.Stage.width*Sburb.Stage.width+Sburb.Stage.height*Sburb.Stage.height+1;
 }
 
 function startUpdateProcess(){
@@ -447,27 +513,6 @@ Sburb.onMouseMove = function(e,canvas){
 	Sburb.Mouse.y = point.y;
 }
 
-Sburb.onMouseDown = function(e,canvas){
-    if(!Sburb.updateLoop) return; // Make sure we are loaded before trying to do things
-	if(Sburb.engineMode=="strife" && hasControl()){
-		Sburb.chooser.choices = Sburb.curRoom.queryActionsVisual(Sburb.char,Sburb.Stage.x+Sburb.Mouse.x,Sburb.Stage.y+Sburb.Mouse.y);
-		if(Sburb.chooser.choices.length>0){
-			Sburb.chooser.choices.push(new Sburb.Action("cancel","cancel","cancel"));
-			beginChoosing();
-		}
-	}
-	Sburb.Mouse.down = true;
-	
-}
-
-Sburb.onMouseUp = function(e,canvas){
-	Sburb.Mouse.down = false;
-    if(!Sburb.updateLoop) return; // Make sure we are loaded before trying to do things
-	if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y)){
-		Sburb.dialoger.nudge();
-	}
-}
-
 function relMouseCoords(event,canvas){
     var totalOffsetX = 0;
     var totalOffsetY = 0;
@@ -483,6 +528,27 @@ function relMouseCoords(event,canvas){
     canvasX = event.pageX - totalOffsetX;
     canvasY = event.pageY - totalOffsetY;
     return {x:canvasX,y:canvasY};
+}
+
+
+function tapCoords(event,canvas){
+	var offsetX = event.center.x - canvas.getBoundingClientRect().left;
+	var offsetY = event.center.y - canvas.getBoundingClientRect().top;
+
+    return {x:offsetX,y:offsetY};
+}
+
+//Calculate which direction to move for press events. Compares line distance between two points
+function getQ(x,y) {
+	var qKey, qInt=Sburb.maxStaticScreen;
+	for(var i=0; i<8; i++){
+		var tmpQInt = Math.pow((x-Sburb.pointArray[i][0]),2)+Math.pow((y-Sburb.pointArray[i][1]),2);
+		if(tmpQInt < qInt){
+			qInt = tmpQInt;
+			qKey = Sburb.quadrantAlign[i];
+		}
+	}
+    return qKey;
 }
 
 function handleAudio(){

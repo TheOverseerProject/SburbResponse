@@ -45,6 +45,8 @@ Sburb.SpriteButton.prototype.updateMouse = function(){
 			if(this.hitsPoint(x-this.width/2,y-this.height/2)){
 				this.pressed = true;
 			}
+		} else {
+			Sburb.Mouse.down = false;
 		}
 	}else{
 		if(this.pressed){

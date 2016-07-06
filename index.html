@@ -5,6 +5,8 @@
 		<!-- imports -->
 		<script type="text/javascript" src="libs/Iuppiter.js"></script>
 		<script type="text/javascript" src="libs/modernizr.js"></script>
+		<script type="text/javascript" src="libs/hammer.js"></script>
+		<script type="text/javascript" src="libs/PreventGhostClick.js"></script>
 		<script type="text/javascript" src="src/Sburb.js"></script>
 		
 		<script type="text/javascript" src="src/Sprite.js"></script>
@@ -29,8 +31,8 @@
 		<script type="text/javascript" src="src/ActionQueue.js"></script>
 		
 	</head>
-	
-	<body onload="Sburb.initialize('SburbDeploy','levels/init.xml','true');">
+
+	<body onload="Sburb.initialize('SburbDeploy','levels/init.xml','true');" oncontextmenu="return false;">
 		<div id="SburbDeploy" ></div>
 		<noscript>Your browser does not appear to support javascript, which this content requires</noscript>
 	</body>
