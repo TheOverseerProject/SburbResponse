@@ -10,7 +10,6 @@ function parseParams(info){
 
 var commands = {};
 
-
 //Create a Dialog
 //syntax: dialog syntax
 commands.talk = function(info){
@@ -75,7 +74,7 @@ commands.changeChar = function(info){
 //syntax: songName, loopingStartPoint (seconds)
 commands.playSong = function(info){
 	var params = parseParams(info);
-	
+
 	Sburb.changeBGM(new Sburb.BGM(Sburb.assets[params[0]],parseFloat(params[1])));
 }
 
@@ -105,7 +104,7 @@ commands.playEffect = function(info){
 commands.playAnimation = commands.startAnimation = function(info){
 	var params = parseParams(info);
 	var sprite = parseCharacterString(params[0]);
-	
+
 	sprite.startAnimation(params[1]);
 }
 
@@ -157,7 +156,7 @@ commands.openChest = function(info){
 			commands.playSound("openSound");
 		}
 	}
-	
+
 	chest.removeAction(Sburb.curAction.name);
 	var offset = params[0].length+params[1].length+2;
 	var speech = info.substring(offset,info.length).trim();
@@ -173,7 +172,7 @@ commands.openChest = function(info){
 	}
 	lastAction = lastAction.followUp = new Sburb.Action("waitFor","time,30");
 	lastAction = lastAction.followUp = new Sburb.Action("talk",speech);
-	
+
 	lastAction = lastAction.followUp = new Sburb.Action("removeSprite",item.name+","+Sburb.curRoom.name);
 	lastAction.followUp = Sburb.curAction.followUp;
 	Sburb.performAction(newAction);
@@ -239,7 +238,7 @@ commands.removeMovie = function(info){
 	Sburb.draw();
 	document.getElementById(info).style.display = "none";
 	//document.getElementById("gameDiv").style.display = "block";
-	
+
 }
 
 //Prevents user from providing input to the character
@@ -352,7 +351,7 @@ commands.addSprite = function(info){
 	var params = parseParams(info);
 	var sprite = Sburb.sprites[params[0]];
 	var room = Sburb.rooms[params[1]];
-	
+
 	room.addSprite(sprite);
 }
 
@@ -440,6 +439,14 @@ commands.toggleVolume = function(){
 	}
 }
 
+
+//Create buttons with choices
+commands.choicePick = function(info){
+	//choice selection has to be the first item in the args tag
+	var buttonPull = info.split(",");
+	Sburb.password=buttonPull[0];
+}
+
 //change the engine mode
 //syntax: modeName
 commands.changeMode = function(info){
@@ -479,9 +486,9 @@ commands.changeRoomRemote = function(info){
 commands.teleportRemote = function(info){
     if(Sburb.loadingRoom) return; Sburb.loadingRoom = true; //Only load one room at a time
 	commands.changeRoomRemote(info);
-	
+
 	Sburb.playEffect(Sburb.effects["teleportEffect"],Sburb.char.x,Sburb.char.y);
-	
+
 	var params = parseParams(info);
 	Sburb.curAction.followUp.followUp.followUp = new Sburb.Action("playEffect","teleportEffect,"+params[2]+","+params[3],null,null,Sburb.curAction.followUp.followUp.followUp);
 }
@@ -627,9 +634,9 @@ commands.openLink = function(info){
 	 }else{
 	     text = url;
 	 }
-	 
+
      var actions = [];
-	 
+
 	 actions.push(new Sburb.Action("openDirect", url + "," + text, "Go To "+text));
 	 actions.push(new Sburb.Action("cancel",null,"Cancel"));
 	 Sburb.chooser.choices = actions;
@@ -640,7 +647,7 @@ commands.openDirect = function(info){
     var params = parseParams(info);
     var url = parseURLstring(params[0]);
     var text = params[1];
-	
+
     window.open(url, text, "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes");
 }
 
@@ -666,7 +673,7 @@ var parseCharacterString = Sburb.parseCharacterString = function(string){
 function parseActionString(string){
 	var actions = [];
 	string = "<sburb>"+string+"</sburb>";
-    
+
 	var input = Sburb.parseXML(string);
 	for(var i=0; i<input.childNodes.length; i++) {
 		var tmp = input.childNodes[i];
@@ -680,7 +687,7 @@ function parseActionString(string){
 function parseTriggerString(string){
 	var triggers = [];
 	string = "<triggers>"+string+"</triggers>";
-	
+
 	var input = Sburb.parseXML(string);
 	for(var i=0; i<input.childNodes.length; i++) {
 		var tmp = input.childNodes[i];

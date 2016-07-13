@@ -8,18 +8,20 @@ var Sburb = (function(Sburb){
 ///////////////////////////////////////////
 
 //constructor
-Sburb.SpriteButton = function(name,x,y,width,height,sheet,action){
+Sburb.SpriteButton = function(name,x,y,width,height,sheet,dx,dy,action){
 	Sburb.Sprite.call(this,name,x,y,width,height);
-	
+
 	this.pressed = false;
 	this.mousePressed = false;
 	this.clicked = false;
 	this.action?action:null;
-	
+	this.pos={x:dx,y:dy};
+	this.hiddenpos=x;
+
 	for(var i=0;i<(sheet.width/this.width)*(sheet.height/this.height);i++){
 		this.addAnimation(new Sburb.Animation("state"+i,sheet,0,0,width,height,i,1,1000));
 	}
-	
+
 	this.startAnimation("state0");
 }
 
@@ -89,6 +91,25 @@ Sburb.SpriteButton.prototype.serialize = function(output){
 }
 
 
+//move the specified sprite towards the specified location at the specified speed
+Sburb.SpriteButton.prototype.moveToward = function(sprite,speed){
+	if(typeof speed != "number"){
+		speed = 100;
+	}
+	if(Math.abs(sprite.x-sprite.pos.x)>speed){
+		sprite.x+=speed*Math.abs(sprite.pos.x-sprite.x)/(sprite.pos.x-sprite.x);
+	}else{
+		sprite.x = sprite.pos.x;
+	}
+
+	if(Math.abs(sprite.y-sprite.pos.y)>speed){
+		sprite.y+=speed*Math.abs(sprite.pos.y-sprite.y)/(sprite.pos.y-sprite.y);
+	}else{
+		sprite.y = sprite.pos.y;
+	}
+	return sprite.y == sprite.pos.y && sprite.x == sprite.pos.x;
+}
+
 
 
 ///////////////////////////////////////////////
@@ -104,7 +125,9 @@ Sburb.parseSpriteButton = function(button){
   									attributes.getNamedItem("y")?parseInt(attributes.getNamedItem("y").value):0,
   									attributes.getNamedItem("width")?parseInt(attributes.getNamedItem("width").value):sheet.width,
   									attributes.getNamedItem("width")?parseInt(attributes.getNamedItem("height").value):sheet.height,
-  									sheet);
+  									sheet,
+  									attributes.getNamedItem("dx")?parseInt(attributes.getNamedItem("dx").value):null,
+  									attributes.getNamedItem("dy")?parseInt(attributes.getNamedItem("dy").value):null);
   	var curAction = button.getElementsByTagName("action");
   	if(curAction.length>0){
   		var newAction = Sburb.parseAction(curAction[0]);

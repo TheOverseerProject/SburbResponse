@@ -1,7 +1,7 @@
 // String trim polyfill
 if(typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, ''); 
+    return this.replace(/^\s+|\s+$/g, '');
   }
 }
 // Array Remove - By John Resig (MIT Licensed)
@@ -50,7 +50,7 @@ Sburb.assets = null; //all images, sounds, paths
 Sburb.sprites = null; //all sprites that were Serial loaded
 Sburb.effects = null; //all effects that were Serial loaded
 Sburb.buttons = null; //all buttons that were Serial loaded
-Sburb.rooms = null; //all rooms 
+Sburb.rooms = null; //all rooms
 Sburb.char = null; //the player
 Sburb.curRoom = null;
 Sburb.destRoom = null; //current room, the room we are transitioning to, if it exists.
@@ -75,6 +75,7 @@ Sburb.loadingRoom = false; // Only load one room at a time
 Sburb.tests = null;
 Sburb.prefixed = null;
 Sburb.firedAsync = false;
+Sburb.password=""; //Used for choices
 
 Sburb.updateLoop = null; //the main updateLoop, used to interrupt updating
 Sburb.initFinished = null; //only used when _hardcode_load is true
@@ -84,7 +85,7 @@ var lastDrawTime = 0;
 
 Sburb.testCompatibility = function(div, levelName, includeDevTools) {
     if(Modernizr.xhr2 && !Sburb.firedAsync) {
-      try {  
+      try {
         // Test blob response
         var xhr = new XMLHttpRequest();
         xhr.open("GET",levelName,true);
@@ -99,7 +100,7 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
         xhr.onabort = function() { Modernizr.addTest('xhrblob', function () { return false; }); };
         xhr.onerror = function() { Modernizr.addTest('xhrblob', function () { return false; }); };
         xhr.send();
-        
+
         // Test Arraybuffer response
         xhr = new XMLHttpRequest();
         xhr.open("GET",levelName,true);
@@ -118,20 +119,20 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
       } catch (e) {
         alert(e.message + "\n\nIf you are running Google Chrome, you need to run it with the -allow-file-access-from-files switch to load this.")
       }
-        
+
         Sburb.firedAsync = true;
     } else {
         Modernizr.addTest('xhrblob', function () { return false; });
         Modernizr.addTest('xhrarraybuffer', function () { return false; });
     }
-    
+
     // Make sure Modernizr finished loading async tests
     if(!('xhrblob' in Modernizr && 'xhrarraybuffer' in Modernizr && 'datauri' in Modernizr)) {
         setTimeout(function() { Sburb.initialize(div, levelName, includeDevTools); }, 200);
         Sburb.crashed = true;
         return;
     }
-    
+
     // Use Modernizr to test compatibility
     var errors = [];
     if(!Modernizr.fontface)                                     errors.push("- Lack of CSS @font-face support.");
@@ -139,7 +140,7 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
     if(!Modernizr.canvastext)                                   errors.push("- Lack of canvas text support.");
     if(!Modernizr.json)                                         errors.push("- Lack of JSON support.");
     if(!Modernizr.xmlserializer)                                errors.push("- Lack of XMLSerializer support.");
-    
+
     if(errors.length) {
         // Display what failed
         var deploy = '<div style="padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; width:650px; height:450px; overflow: auto;">';
@@ -168,7 +169,7 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
         } else {
             Sburb.tests['storage'] = false;
         }
-        
+
         // Caution, weirdness ahead. Tests in order of preference, future tests should use increasing numbers. Do not change existing constants.
         // To deprecate a test, move it to the bottom of the list. To make it obsolete, comment it out.
         // Assets.js and Debugger.js are the only files to reference these constants
@@ -207,12 +208,12 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     if(Sburb.crashed)
         return; // Hard crash if the browser is too old. testCompatibility() will handle the error message
 	Sburb.debugger = new Sburb.Debugger(); // Load debugger first! -- But not quite
-    
+
     var deploy = document.createElement('div');
     deploy.style.position = "relative";
     deploy.style.padding = "0";
     deploy.style.margin = "auto";
-    
+
 	var gameDiv = document.createElement('div');
     gameDiv.id = "SBURBgameDiv";
 	gameDiv.onkeydown = _onkeydown;
@@ -220,24 +221,24 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     gameDiv.style.position = "absolute";
     gameDiv.style.zIndex = "100";
     deploy.appendChild(gameDiv);
-	
+
 	var movieDiv = document.createElement('div');
     movieDiv.id = "SBURBmovieBin";
     movieDiv.style.position = "absolute";
     movieDiv.style.zIndex = "200";
     deploy.appendChild(movieDiv);
-    
+
 	var fontDiv = document.createElement('div');
     fontDiv.id = "SBURBfontBin";
     deploy.appendChild(fontDiv);
-    
+
 	var gifDiv = document.createElement('div');
     gifDiv.id = "SBURBgifBin";
     gifDiv.style.width = "0";
     gifDiv.style.height = "0";
     gifDiv.style.overflow = "hidden";
     deploy.appendChild(gifDiv);
-    
+
 	var gameCanvas = document.createElement("canvas");
     gameCanvas.id = "SBURBStage";
     gameCanvas.onmousemove = function(e) { Sburb.onMouseMove(e,this); };
@@ -268,7 +269,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 		var mockSpace = {keyCode:Sburb.Keys.space};
 		Sburb.Mouse.x = point.x;
 		Sburb.Mouse.y = point.y;
-		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y)){
+		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y) && !Sburb.dialoger.choicePicking){
 			Sburb.dialoger.nudge();
 		} else {
 			_onkeydown(mockSpace);
@@ -314,9 +315,9 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     mapCanvas.height = 1;
     mapCanvas.style.display = "none";
     gameDiv.appendChild(mapCanvas);
-	
+
 	document.getElementById(div).appendChild(deploy);
-    
+
     // Copy local variables into Sburb
     Sburb.Container = deploy;
     Sburb.Game = gameDiv;
@@ -325,10 +326,10 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     Sburb.Bins["movie"] = movieDiv;
     Sburb.Bins["font"] = fontDiv;
     Sburb.Bins["gif"] = gifDiv;
-    
+
     // Set default dimensions
     Sburb.setDimensions(1156,650);
-    
+
 	Sburb.stage = Sburb.Stage.getContext("2d");
 	Sburb.Stage.onblur = _onblur;
 	Sburb.chooser = new Sburb.Chooser();
@@ -343,7 +344,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	Sburb.gameState = {};
 	Sburb.pressed = {};
 	Sburb.pressedOrder = [];
-    
+
 
 	//do not change the order of this array. Used for key mockup for touch/mouse events
 	Sburb.quadrantAlign = [[Sburb.Keys.left,Sburb.Keys.up], [Sburb.Keys.left], [Sburb.Keys.left,Sburb.Keys.down],
@@ -394,10 +395,10 @@ function update(){
 	handleAudio();
 	handleInputs();
 	handleHud();
-	
+
 	if(!Sburb.loadingRoom)
 	    Sburb.curRoom.update();
-	
+
 	focusCamera();
 	handleRoomChange();
 	Sburb.chooser.update();
@@ -412,29 +413,29 @@ function draw(){
 		Sburb.stage.save();
 		Sburb.Stage.offset = true;
 		Sburb.stage.translate(-Sburb.Stage.x,-Sburb.Stage.y);
-	
+
 		Sburb.curRoom.draw();
-	
+
 		Sburb.stage.restore();
 		Sburb.Stage.offset = false;
-	
+
 		if(Sburb.Stage.fade>0.1){
 			Sburb.stage.fillStyle = "rgba(0,0,0,"+Sburb.Stage.fade+")";
 			Sburb.stage.fillRect(0,0,Sburb.Stage.width,Sburb.Stage.height);
 		}
-	
+
 		Sburb.dialoger.draw();
 		drawHud();
-	
+
 		Sburb.stage.save();
 		Sburb.Stage.offset = true;
 		Sburb.stage.translate(-Sburb.Stage.x,-Sburb.Stage.y);
-	
+
 		Sburb.chooser.draw();
-	
+
 		Sburb.stage.restore();
 		Sburb.Stage.offset = false;
-		
+
 	    Sburb.debugger.draw();
 	}
 }
@@ -444,7 +445,7 @@ var _onkeydown = function(e){
 	    if(Sburb.chooser.choosing){
 		Sburb.performAction(Sburb.chooser.choices[0]);
 		Sburb.chooser.choosing = false;
-	    }else if(Sburb.dialoger.talking){
+	    }else if(Sburb.dialoger.talking && !Sburb.dialoger.choicePicking){
 		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space]){
 			    Sburb.dialoger.nudge();
 		    }
@@ -455,7 +456,7 @@ var _onkeydown = function(e){
 			    for(var i=0;i<queries.length;i++){
 				    Sburb.chooser.choices = Sburb.curRoom.queryActions(Sburb.char,queries[i].x,queries[i].y);
 				    if(Sburb.chooser.choices.length>0){
-				   	Sburb.performAction(Sburb.chooser.choices[0]); 
+				   	Sburb.performAction(Sburb.chooser.choices[0]);
 					break;
 				    }
 			    }
@@ -467,7 +468,7 @@ var _onkeydown = function(e){
        between injecting the canvas into the dom
        and initializing Sburb.pressed and Sburb.pressedOrder
        could throw an exception.
-       
+
        I'm not too worried about it. -Fugi */
 	if(!Sburb.pressed[e.keyCode])
 	    Sburb.pressedOrder.push(e.keyCode);
@@ -551,7 +552,7 @@ function handleAudio(){
 		if (Sburb.lastMusicTime == Sburb.bgm.asset.currentTime){
 			Sburb.musicStoppedFor++;
 			if(Sburb.musicStoppedFor>4){
-		    Sburb.bgm.asset.pause(); 
+		    Sburb.bgm.asset.pause();
 		    Sburb.bgm.asset.play(); // asset.play() because sometimes this condition is true on startup
 		  }
     }else{
@@ -595,10 +596,10 @@ function drawHud(){
 }
 
 function hasControl(){
-	return !Sburb.dialoger.talking 
-		&& !Sburb.chooser.choosing 
-		&& !Sburb.destRoom  
-		&& !Sburb.fading 
+	return !Sburb.dialoger.talking
+		&& !Sburb.chooser.choosing
+		&& !Sburb.destRoom
+		&& !Sburb.fading
 		&& !Sburb.destFocus;
 }
 
@@ -625,8 +626,8 @@ function handleRoomChange(){
 		if(Sburb.Stage.fade<1.1){
 			Sburb.Stage.fade=Math.min(1.1,Sburb.Stage.fade+Sburb.Stage.fadeRate);
 		}else if(Sburb.destRoom){
-			var deltaX = Sburb.destX-Sburb.char.x; 
-			var deltaY = Sburb.destY-Sburb.char.y; 
+			var deltaX = Sburb.destX-Sburb.char.x;
+			var deltaY = Sburb.destY-Sburb.char.y;
 			var curSprite = Sburb.char;
 			while(curSprite){
 				curSprite.x+=deltaX;
@@ -665,7 +666,7 @@ function chainAction(){
 			continue;
 		}
 		if(queue.paused || queue.waitFor) {
-			if((queue.trigger && queue.trigger.checkCompletion()) 
+			if((queue.trigger && queue.trigger.checkCompletion())
                 || queue.waitFor) {
 				queue.paused = false;
 				queue.trigger = null;
@@ -675,7 +676,7 @@ function chainAction(){
 		}
         chainActionInQueue(queue);
 	}
-}    
+}
 
 function chainActionInQueue(queue) {
 	if(queue.curAction.times<=0){
@@ -842,4 +843,4 @@ Sburb.draw = draw;
 return Sburb;
 })(Sburb || {});
 
-    
+

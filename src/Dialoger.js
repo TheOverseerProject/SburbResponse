@@ -12,41 +12,46 @@ var Sburb = (function(Sburb){
 Sburb.Dialoger = function(hiddenPos, alertPos, talkPosLeft, talkPosRight,
 	spriteStartRight, spriteEndRight, spriteStartLeft, spriteEndLeft,
 	alertTextDimensions, leftTextDimensions, rightTextDimensions, type){
-	
+
 	this.name="default";
 	this.currentDialog = null;
-	
+
 	this.talking = false;
+	this.choicePicking = false;
 	this.queue = [];
 	this.extraArgs = null;
 	this.dialog = new Sburb.FontEngine();
-	
+
 	this.hiddenPos = hiddenPos;
 	this.alertPos = alertPos;
 	this.talkPosLeft = talkPosLeft;
 	this.talkPosRight = talkPosRight;
-	
+
 	this.spriteStartRight = spriteStartRight;
 	this.spriteEndRight = spriteEndRight;
-	
+
 	this.spriteStartLeft = spriteStartLeft;
 	this.spriteEndLeft = spriteEndLeft;
-	
+
 	this.alertTextDimensions = alertTextDimensions;
 	this.leftTextDimensions = leftTextDimensions;
 	this.rightTextDimensions = rightTextDimensions;
-	
+
 	this.pos = {x:hiddenPos.x,y:hiddenPos.y}
-	
+
 	this.actor = null;
 	this.dialogSide = "Left";
 	this.graphic = null;
 	this.box = null;
 	this.defaultBox = null;
-	
+
 	this.type = type;
 	this.handleType();
 	this.inPosition = false;
+
+	//TODO make this better
+	this.choice1 = "choice1";
+	this.choice2 = "choice2";
 }
 
 Sburb.Dialoger.prototype.dialogSpriteLeft = null;
@@ -57,7 +62,7 @@ Sburb.Dialoger.prototype.handleType = function(){
 	if(this.type == "social"){
 		this.hashes = new Sburb.FontEngine();
 		this.hashes.setFormatted(false);
-		
+
 		this.choices = {};
 	}
 }
@@ -82,7 +87,7 @@ Sburb.Dialoger.prototype.nudge = function(){
 }
 
 Sburb.Dialoger.prototype.skipAll = function(){
-	this.talking = false; 
+	this.talking = false;
 }
 
 //start the provided dialog
@@ -104,15 +109,15 @@ Sburb.Dialoger.prototype.startDialog = function(info){
 			this.queue.splice(i+1,1);
 		}
 	}
-	
+
 	if(this.type=="social"){
 		this.hashes.setText("");
 	}
-	
+
 	this.queue.reverse();
 	this.queue.pop();
 	this.nextDialog();
-	
+
 	if(this.type=="social"){
 		Sburb.buttons.spadeButton.startAnimation("state0");
 		Sburb.buttons.heartButton.startAnimation("state0");
@@ -126,15 +131,15 @@ Sburb.Dialoger.prototype.startDialog = function(info){
 			}
 		}
 	}
-	
+
 	this.box.x=-this.box.width;
 	this.talking = true;
-	
+
 }
 
 //start the next dialog
 Sburb.Dialoger.prototype.nextDialog = function(){
-	
+
 	var nextDialog = this.queue.pop().trim();
 	this.dialog.setText(nextDialog);
 	this.dialog.showSubText(0,0);
@@ -150,10 +155,13 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 		if(colIndex>=0 && colIndex<lastIndex){
 			lastIndex = colIndex;
 		}
-		var resource = prefix.substring(firstIndex+1,lastIndex);	
-		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);	
+		var resource = prefix.substring(firstIndex+1,lastIndex);
+		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
 		this.graphic = Sburb.sprites[resource];
-		if(!this.graphic){
+		//for an in-dialog choice
+		if(resource==="choice"){
+			this.choicePicking=true;
+		}else if(!this.graphic){
 			var img = Sburb.assets[resource];
 			this.graphic = new Sburb.Sprite();
 			this.graphic.addAnimation(new Sburb.Animation("image",img,0,0,img.width,img.height,0,1,1));
@@ -162,7 +170,7 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 	}else{
 		this.graphic = null;
 	}
-	
+
 	if(prefix.indexOf("%")>=0){
 		var firstIndex = prefix.indexOf("%");
 		var lastIndex = prefix.length;
@@ -171,25 +179,25 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 		if(colIndex>=0 && colIndex<lastIndex){
 			lastIndex = colIndex;
 		}
-		var resource = prefix.substring(firstIndex+1,lastIndex);	
+		var resource = prefix.substring(firstIndex+1,lastIndex);
 		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
-			
+
 		this.setBox(resource);
 	}else{
 		this.box = this.defaultBox;
 	}
-	
+
 	if(prefix.indexOf(":")>=0){
 		var firstIndex = prefix.indexOf(":");
 		var lastIndex = prefix.length;
 
-		var resource = prefix.substring(firstIndex+1,lastIndex);	
-		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);	
-		
+		var resource = prefix.substring(firstIndex+1,lastIndex);
+		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
+
 		this.extraArgs = resource;
 		if(this.type=="social"){
 			this.hashes.setText(this.extraArgs.replace(/#/g," #").replace(/-/g," ").trim());
-			
+
 		}
 	}else{
 		this.extraArgs = null;
@@ -197,15 +205,15 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 			this.hashes.setText("");
 		}
 	}
-	
-	
+
+
 	if(prefix=="!"){
 		this.actor = null;
 		this.dialogSide = "Left";
 	}else{
 		var newActor;
 		if(prefix.indexOf("_")>=0){
-			newActor = prefix.substring(0,prefix.indexOf("_"));	
+			newActor = prefix.substring(0,prefix.indexOf("_"));
 		}else{
 			newActor = prefix.substring(0,2);
 		}
@@ -221,12 +229,12 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 			var desiredPos = this.startOnSide(this.dialogSide);
 			sprite.x = desiredPos.x;
 			sprite.y = desiredPos.y;
-			
+
 		}
 		this.actor = newActor;
 		this.dialogOnSide(this.dialogSide).startAnimation(prefix);
 	}
-	
+
 }
 
 //get the string suffix for the opposite side to that is currently talking
@@ -257,13 +265,13 @@ Sburb.Dialoger.prototype.endOnSide = function(side){
 Sburb.Dialoger.prototype.moveToward = function(sprite,pos,speed){
 	if(typeof speed != "number"){
 		speed = 100;
-	} 
+	}
 	if(Math.abs(sprite.x-pos.x)>speed){
 		sprite.x+=speed*Math.abs(pos.x-sprite.x)/(pos.x-sprite.x);
 	}else{
 		sprite.x = pos.x;
 	}
-	
+
 	if(Math.abs(sprite.y-pos.y)>speed){
 		sprite.y+=speed*Math.abs(pos.y-sprite.y)/(pos.y-sprite.y);
 	}else{
@@ -288,13 +296,13 @@ Sburb.Dialoger.prototype.update = function(){
 			desiredPos = this.alertPos;
 			this.inPosition = true;
 		}else{
-			desiredPos = this["talkPos"+this.dialogSide];	
+			desiredPos = this["talkPos"+this.dialogSide];
 			ready = this.moveToward(this.dialogOnSide(this.dialogSide),this.endOnSide(this.dialogSide));
 			this.moveToward(this.dialogOnSide(this.oppositeSide(this.dialogSide)),this.startOnSide(this.oppositeSide(this.dialogSide)));
 		}
 		var init = false;
 		if(this.moveToward(this.pos,desiredPos,110) && ready){
-			
+
 			if(this.dialog.start==this.dialog.end){
 				this.inPosition = true;
 				var dialogDimensions = this.decideDialogDimensions();
@@ -306,7 +314,7 @@ Sburb.Dialoger.prototype.update = function(){
 				this.dialogOnSide(this.dialogSide).update();
 			}
 			if(this.type=="social"){
-				
+
 				if(this.queue.length==0){
 					if(this.actor!=null){
 						spadeButton.update();
@@ -321,13 +329,28 @@ Sburb.Dialoger.prototype.update = function(){
 		}else{
 			this.inPosition = false;
 		}
-		
+
 		if(this.graphic){
 			this.graphic.x = this.pos.x;
 			this.graphic.y = this.pos.y;
 			this.graphic.update();
 		}
-		
+
+		if(this.choicePicking){
+			//TODO sort of sloppy but does the job for what I need.
+			//more robust things to do here would include more than 2 choices
+			//or being able to rehash the choice more than once (currently will only activate one time)
+			Sburb.hud[this.choice1].moveToward(Sburb.hud[this.choice1],120);
+			Sburb.hud[this.choice2].moveToward(Sburb.hud[this.choice2],120);
+			this.moveToward(this.pos,this.hiddenPos,240);
+			if(Sburb.password!=="" && Sburb.hud[this.choice1].hiddenPos == Sburb.hud[this.choice1].x && Sburb.hud[this.choice2].hiddenPos == Sburb.hud[this.choice2].x){
+				Sburb.dialoger.choicePicking = false;
+			} else if(Sburb.password!==""){
+				Sburb.hud[this.choice1].pos.x=Sburb.hud[this.choice1].hiddenPos;
+				Sburb.hud[this.choice2].pos.x=Sburb.hud[this.choice2].hiddenPos;
+			}
+		}
+
 	}else {
 		this.graphic = null;
 		this.moveToward(this.pos,this.hiddenPos,120);
@@ -358,12 +381,12 @@ Sburb.Dialoger.prototype.update = function(){
 		}else{
 			spadeButton.x = hashTagBar.x+hashTagBar.animation.colSize-120;
 			heartButton.x = hashTagBar.x+hashTagBar.animation.colSize-80;
-			bubbleButton.x = hashTagBar.x+hashTagBar.animation.colSize-40;		
+			bubbleButton.x = hashTagBar.x+hashTagBar.animation.colSize-40;
 		}
 		spadeButton.y = hashTagBar.y+15;
 		heartButton.y = hashTagBar.y+15;
 		bubbleButton.y = hashTagBar.y+15;
-		
+
 			if(this.actor){
 				if(Sburb.buttons.spadeButton.animation.name=="state1"){
 					this.choices[this.currentDialog] = -1;
@@ -373,13 +396,13 @@ Sburb.Dialoger.prototype.update = function(){
 					this.choices[this.currentDialog] = 0;
 				}
 			}
-		
+
 		if(init){
 			if(this.dialogSide=="Right"){
-				this.hashes.setDimensions(this.dialog.x,hashTagBar.y+13, 
+				this.hashes.setDimensions(this.dialog.x,hashTagBar.y+13,
 					this.dialog.width, hashTagBar.animation.rowSize-10);
 			}else{
-				this.hashes.setDimensions(this.dialog.x,hashTagBar.y+13, 
+				this.hashes.setDimensions(this.dialog.x,hashTagBar.y+13,
 					this.dialog.width, hashTagBar.animation.rowSize-10);
 			}
 		}
@@ -389,7 +412,7 @@ Sburb.Dialoger.prototype.update = function(){
 			this.hashes.showSubText(0,0);
 		}
 	}
-	
+
 	this.box.update();
 }
 
@@ -436,7 +459,7 @@ Sburb.Dialoger.prototype.setBox = function(box){
 Sburb.Dialoger.prototype.draw = function(){
 	if(this.type=="social"){
 		Sburb.sprites.hashTagBar.draw();
-		
+
 	}
 	this.box.draw();
 	if(this.graphic){
@@ -469,7 +492,7 @@ Sburb.Dialoger.prototype.draw = function(){
 
 Sburb.parseDialoger = function(dialoger){
 	var attributes = dialoger.attributes;
-	
+
 	var hiddenPos = parseDimensions(attributes.getNamedItem("hiddenPos").value);
 	var alertPos = parseDimensions(attributes.getNamedItem("alertPos").value);
 	var talkPosLeft = parseDimensions(attributes.getNamedItem("talkPosLeft").value);
@@ -482,16 +505,16 @@ Sburb.parseDialoger = function(dialoger){
 	var leftTextDimensions = parseDimensions(attributes.getNamedItem("leftTextDimensions").value);
 	var rightTextDimensions = parseDimensions(attributes.getNamedItem("rightTextDimensions").value);
 	var type = attributes.getNamedItem("type")?attributes.getNamedItem("type").value:"standard";
-	
+
 	var newDialoger = new Sburb.Dialoger(hiddenPos, alertPos, talkPosLeft, talkPosRight,
 		spriteStartRight, spriteEndRight, spriteStartLeft, spriteEndLeft,
 		alertTextDimensions, leftTextDimensions, rightTextDimensions,type);
-	
+
 	var box = attributes.getNamedItem("box").value;
   	newDialoger.setBox(box);
 
   	return newDialoger;
-  	
+
 }
 
 Sburb.Dialoger.prototype.serialize = function(input){
@@ -513,7 +536,7 @@ function serializeDimensions(base){
 	return str;
 }
 
-function serializeDimension(base,val){	
+function serializeDimension(base,val){
 	var dim = base[val];
 	var sub = " "+val+"='";
 	sub+=(dim.hasOwnProperty("x"))?dim.x+",":"";
