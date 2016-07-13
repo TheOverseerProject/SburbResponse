@@ -88,10 +88,11 @@ safe than sorry.-->
   		<action class='beMeenah'/>
   	</character>
   
-  	<character class='karkat' x='420' y='500'>
+  	<character class='karkat' name='karkat1' x='420' y='500'>
   		<action command='talk' name='Talk.'>
   			<args>
   				@meenah_talk Hey what're you doing in my sample. 
+  				@~choice You have branched the path.
   				@meenah_angrytalk This is a long lorem ibsum on the left hand side Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dapibus odio felis, a efficitur sapien dapibus non. Morbi lobortis elementum risus ac semper. Quisque sed odio faucibus, faucibus mi semper, rutrum quam. Cras et efficitur lorem. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam pellentesque augue ac egestas interdum. In ut consequat nibh. Nulla ac mollis lacus. Morbi quis orci velit. Sed augue lectus, posuere venenatis interdum eu, rhoncus quis tellus. Nullam ullamcorper lorem in magna luctus placerat. Nulla vel purus est. In consequat nulla ac varius commodo. In facilisis nisi et commodo porta. Maecenas posuere, tellus vel imperdiet vulputate, augue nulla vulputate nisi, sit amet bibendum arcu nulla eget lectus.
 
 Nulla vitae risus eget libero faucibus accumsan. Duis et imperdiet orci, eu egestas purus. Phasellus vel dolor et sapien mollis vehicula eget vitae ligula. Aliquam tempor nec magna a semper. Ut tristique in magna nec suscipit. Proin sapien tortor, maximus ac tellus eu, porttitor pharetra mauris. Praesent nibh neque, rhoncus eget orci id, ultrices pharetra quam. Sed eu commodo tortor, vel commodo orci. Ut eu sem in nunc egestas egestas. Mauris ullamcorper dignissim lectus, ac malesuada quam tempus quis.
@@ -104,6 +105,16 @@ Vivamus faucibus fringilla sem nec mattis. Nulla scelerisque dolor et leo laoree
   				@karkat_talk this is a long lorem ibsum on the right hand side
   				@meenah_annoyed ouuuuuuut
   			</args>
+  		</action>
+  		<action command='talk' name='choice1'>
+			<args>
+		  		@meenah_talk You picked choice 1.
+		  	</args>
+  		</action>
+  		<action command='talk' name='choice2'>
+			<args>
+				@meenah_talk You picked choice 2.
+			</args>
   		</action>
   	</character>
   	
