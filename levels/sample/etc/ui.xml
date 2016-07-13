@@ -20,6 +20,9 @@
 	<asset name='volumeControl' type='graphic'>interface/volumeControl.png</asset>
 	<asset name='saveControl' type='graphic'>interface/save_icon.png</asset>
 	<asset name='helpControl' type='graphic'>interface/helpControl.png</asset>
+	<asset name='choice1' type='graphic'>interface/choice1.png</asset>
+	<asset name='choice2' type='graphic'>interface/choice2.png</asset>
+
 
   <asset name='dialogBox' type='graphic'>interface/boxes/dialogBoxBig.png</asset>
   <asset name='closeButtonSheet' type='graphic'>interface/closeconversation.png</asset>
@@ -51,6 +54,25 @@
   		</action>
   	</spritebutton>
   	
+  	<!-- Takes both choices as an argument, with the password as the first argument -->
+  	 <spritebutton name='choice1' x='-500' y='111' sheet='choice1' dx='100' dy='111' >
+	  		<action command='choicePick' choice='true'>
+	  			<args>choice1,choice2</args>
+	  			<action command='removeAction'>
+					<args>karkat1,Talk.,choice2</args>
+				</action>
+	  		</action>
+  	</spritebutton>
+  	
+  	<spritebutton name='choice2' x='1456' y='111' sheet='choice2' dx='628' dy='111' >
+		<action command='choicePick' choice='true'>
+		 	<args>choice2,choice1</args>
+		 	<action command='removeAction'>
+				<args>karkat1,Talk.,choice1</args>
+			</action>
+		  </action>
+  	</spritebutton>
+  		
   	<!-- here we configure all the parameters used by the dialoger system. This are
   	pretty reasonable defaults, but you can mess around with them if you want -->
 		<dialoger alertPos="100,120" talkPosRight="100,120" talkPosLeft="100,120" hiddenPos="-1000,120"
