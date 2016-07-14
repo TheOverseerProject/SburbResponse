@@ -34,8 +34,10 @@ Sburb.SpriteButton.prototype.update = function(){
 
 //update button in relation to mouse state
 Sburb.SpriteButton.prototype.updateMouse = function(){
-	var x = Sburb.Mouse.x;
-	var y = Sburb.Mouse.y;
+	var currRatioX = Sburb.Stage.width/Sburb.Stage.currentWidth;
+	var currRatioY = Sburb.Stage.height/Sburb.Stage.currentHeight;
+	var x = Sburb.Mouse.x*currRatioX;
+	var y = Sburb.Mouse.y*currRatioY;
 	var mouseDown = Sburb.Mouse.down;
 	this.clicked = false;
 	if(this.hitsPoint(x-this.width/2,y-this.height/2)){

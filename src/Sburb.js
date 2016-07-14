@@ -76,6 +76,8 @@ Sburb.tests = null;
 Sburb.prefixed = null;
 Sburb.firedAsync = false;
 Sburb.password=""; //Used for choices
+Sburb.pointArray=null; //where the corners and middle of the screen are, per resize function
+Sburb.maxStaticScreen=0; //a big number to compare against
 
 Sburb.updateLoop = null; //the main updateLoop, used to interrupt updating
 Sburb.initFinished = null; //only used when _hardcode_load is true
@@ -269,7 +271,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 		var mockSpace = {keyCode:Sburb.Keys.space};
 		Sburb.Mouse.x = point.x;
 		Sburb.Mouse.y = point.y;
-		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x,Sburb.Mouse.y) && !Sburb.dialoger.choicePicking){
+		if(Sburb.dialoger && Sburb.dialoger.box && Sburb.dialoger.box.isVisuallyUnder(Sburb.Mouse.x*(Sburb.Stage.width/Sburb.Stage.currentWidth),Sburb.Mouse.y*(Sburb.Stage.height/Sburb.Stage.currentHeight)) && !Sburb.dialoger.choicePicking){
 			Sburb.dialoger.nudge();
 		} else {
 			_onkeydown(mockSpace);
@@ -354,24 +356,50 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     Sburb.loadSerialFromXML(levelName); // comment out this line and
     //loadAssets();                        // uncomment these two lines, to do a standard hardcode load
     //_hardcode_load = 1;
+    resize();
+
+	window.addEventListener('resize', resize, false);
+
 }
 
 Sburb.setDimensions = function(width, height) {
     if(width) {
         Sburb.Container.style.width = width+"px";
         Sburb.Stage.width = width;
+        Sburb.Stage.currentWidth = width;
     }
     if(height) {
         Sburb.Container.style.height = height+"px";
         Sburb.Stage.height = height;
+        Sburb.Stage.currentHeight = height;
     }
+}
+
+function resize() {
+	var canvas = document.querySelector('canvas');
+	var gameDiv = document.getElementById('SburbDeploy');
+	var width = window.innerWidth;
+
+	if(width>Sburb.Stage.width){
+		width=Sburb.Stage.width;
+	}
+
+	var ratio = canvas.height/canvas.width;
+	var height = width * ratio;
+
+	canvas.style.width = width+'px';
+	canvas.style.height = height+'px';
+	gameDiv.style.width = width+'px';
+	gameDiv.style.height = height +'px';
 
 	//These are for comparing relative point distance for mouse/touch movement
 	//do not change the order of this array
-	Sburb.pointArray = [[0,0],[0,Sburb.Stage.height/2],[0,Sburb.Stage.height],[Sburb.Stage.width/2,0],
-		[Sburb.Stage.width/2,Sburb.Stage.height],[Sburb.Stage.width,0],[Sburb.Stage.width,Sburb.Stage.height/2],
-		[Sburb.Stage.width,Sburb.Stage.height]];
-	Sburb.maxStaticScreen = Sburb.Stage.width*Sburb.Stage.width+Sburb.Stage.height*Sburb.Stage.height+1;
+	Sburb.pointArray = [[0,0],[0,height/2],[0,height],[width/2,0],
+		[width/2,height],[width,0],[width,height/2],
+		[width,height]];
+	Sburb.maxStaticScreen = width*width+height*height+1;
+	Sburb.Stage.currentWidth=width;
+	Sburb.Stage.currentHeight=height;
 }
 
 function startUpdateProcess(){
