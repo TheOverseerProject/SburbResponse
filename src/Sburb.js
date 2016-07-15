@@ -376,21 +376,21 @@ Sburb.setDimensions = function(width, height) {
 }
 
 function resize() {
-	var canvas = document.querySelector('canvas');
-	var gameDiv = document.getElementById('SburbDeploy');
 	var width = window.innerWidth;
 
 	if(width>Sburb.Stage.width){
 		width=Sburb.Stage.width;
 	}
 
-	var ratio = canvas.height/canvas.width;
+	var ratio = Sburb.Stage.height/Sburb.Stage.width;
 	var height = width * ratio;
 
-	canvas.style.width = width+'px';
-	canvas.style.height = height+'px';
-	gameDiv.style.width = width+'px';
-	gameDiv.style.height = height +'px';
+    Sburb.Container.style.width = width+"px";
+    Sburb.Container.style.height = height+"px";
+	Sburb.Stage.style.width = width+'px'; //sorta weird, but this sets the box it displays in as opposed to the coordinates
+	Sburb.Stage.style.height = height+'px';
+	Sburb.Game.style.width = width+'px';
+	Sburb.Game.style.height = height +'px';
 
 	//These are for comparing relative point distance for mouse/touch movement
 	//do not change the order of this array
