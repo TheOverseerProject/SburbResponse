@@ -28,6 +28,192 @@ Array.prototype.destroy = function(obj) {
 (function(){var a=typeof window!="undefined"?window:exports,b="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",c=function(){try{document.createElement("$")}catch(a){return a}}();a.btoa||(a.btoa=function(a){for(var d,e,f=0,g=b,h="";a.charAt(f|0)||(g="=",f%1);h+=g.charAt(63&d>>8-f%1*8)){e=a.charCodeAt(f+=.75);if(e>255)throw c;d=d<<8|e}return h}),a.atob||(a.atob=function(a){a=a.replace(/=+$/,"");if(a.length%4==1)throw c;for(var d=0,e,f,g=0,h="";f=a.charAt(g++);~f&&(e=d%4?e*64+f:f,d++%4)?h+=String.fromCharCode(255&e>>(-2*d&6)):0)f=b.indexOf(f);return h})})();
 
 var Sburb = (function(Sburb){
+
+//the draw loop
+//MainLoop (modified) - Isaac Sukin MIT Licensed
+var simulationTimestep = 1000 / 30,
+    frameDelta = 0,
+    lastFrameTimeMs = 0,
+    fps = 30,
+    lastFpsUpdate = 0,
+    framesThisSecond = 0,
+    numUpdateSteps = 0,
+    minFrameDelay = 0,
+    running = false,
+    started = false,
+    panic = false,
+    windowOrRoot = typeof window === 'object' ? window : Sburb,
+
+
+    // The polyfill is adapted from the MIT-licensed
+    // https://github.com/underscorediscovery/realtime-multiplayer-in-html5
+    requestAnimationFrame = windowOrRoot.requestAnimationFrame || (function() {
+        var lastTimestamp = Date.now(),
+            now,
+            timeout;
+        return function(callback) {
+            now = Date.now();
+            timeout = Math.max(0, simulationTimestep - (now - lastTimestamp));
+            lastTimestamp = now + timeout;
+            return setTimeout(function() {
+                callback(now + timeout);
+            }, timeout);
+        };
+    })(),
+
+    cancelAnimationFrame = windowOrRoot.cancelAnimationFrame || clearTimeout,
+
+    NOOP = function() {},
+
+    begin = NOOP,
+
+    update = NOOP,
+
+    draw = NOOP,
+
+    end = NOOP,
+
+    rafHandle;
+
+Sburb.drawLoop = {
+
+    getSimulationTimestep: function() {
+        return simulationTimestep;
+    },
+
+    setSimulationTimestep: function(timestep) {
+        simulationTimestep = timestep;
+        return this;
+    },
+
+    getFPS: function() {
+        return fps;
+    },
+
+    getMaxAllowedFPS: function() {
+        return 1000 / minFrameDelay;
+    },
+
+    setMaxAllowedFPS: function(fps) {
+        if (typeof fps === 'undefined') {
+            fps = Infinity;
+        }
+        if (fps === 0) {
+            this.stop();
+        } else {
+            // Dividing by Infinity returns zero.
+            minFrameDelay = 1000 / fps;
+        }
+        return this;
+    },
+
+    resetFrameDelta: function() {
+        var oldFrameDelta = frameDelta;
+        frameDelta = 0;
+        return oldFrameDelta;
+    },
+
+    setBegin: function(fun) {
+        begin = fun || begin;
+        return this;
+    },
+
+    setUpdate: function(fun) {
+        update = fun || update;
+        return this;
+    },
+
+    setDraw: function(fun) {
+        draw = fun || draw;
+        return this;
+    },
+
+    setEnd: function(fun) {
+        end = fun || end;
+        return this;
+    },
+
+
+    start: function() {
+        if (!started) {
+            started = true;
+            rafHandle = requestAnimationFrame(function(timestamp) {
+                draw();
+                running = true;
+                lastFrameTimeMs = timestamp;
+                lastFpsUpdate = timestamp;
+                framesThisSecond = 0;
+
+                rafHandle = requestAnimationFrame(animate);
+            });
+        }
+        return this;
+    },
+
+    stop: function() {
+        running = false;
+        started = false;
+        cancelAnimationFrame(rafHandle);
+        return this;
+    },
+
+    isRunning: function() {
+        return running;
+    },
+};
+
+function animate(timestamp) {
+
+    rafHandle = requestAnimationFrame(animate);
+    if (timestamp < lastFrameTimeMs + minFrameDelay) {
+        return;
+    }
+    frameDelta += timestamp - lastFrameTimeMs;
+    lastFrameTimeMs = timestamp;
+    begin(timestamp, frameDelta);
+    if (timestamp > lastFpsUpdate + 1000) {
+        fps = 0.25 * framesThisSecond + 0.75 * fps;
+
+        lastFpsUpdate = timestamp;
+        framesThisSecond = 0;
+    }
+    framesThisSecond++;
+
+    numUpdateSteps = 0;
+    while (frameDelta >= simulationTimestep) {
+        update(simulationTimestep);
+        frameDelta -= simulationTimestep;
+        if (++numUpdateSteps >= 240) {
+            panic = true;
+            break;
+        }
+    }
+    draw();
+
+    end(panic);
+
+    panic = false;
+}
+
+// AMD support
+if (typeof define === 'function' && define.amd) {
+    define(Sburb.drawLoop);
+}
+// CommonJS support
+else if (typeof module === 'object' && module !== null && typeof module.exports === 'object') {
+    module.exports = Sburb.drawLoop;
+}
+
+
+Sburb.end = function end(panic) {
+    if (panic) {
+        var discardedTime = Math.round(Sburb.drawLoop.resetFrameDelta());
+        console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+    }
+}
+
+
+
 //650x450 screen
 Sburb.Keys = {backspace:8,tab:9,enter:13,shift:16,ctrl:17,alt:18,escape:27,space:32,left:37,up:38,right:39,down:40,w:87,a:65,s:83,d:68,tilde:192};
 
@@ -404,21 +590,20 @@ function resize() {
 
 function startUpdateProcess(){
 	haltUpdateProcess();
+	Sburb.drawLoop.setUpdate(Sburb.update).setDraw(Sburb.draw).setEnd(Sburb.end).start();
+	Sburb.updateLoop=true;
 	Sburb.assetManager.stop();
-	Sburb.updateLoop=setInterval(update,1000/Sburb.Stage.fps);
-	Sburb.drawLoop=setInterval(draw,1000/Sburb.Stage.fps);
 }
 
 function haltUpdateProcess(){
 	if(Sburb.updateLoop){
-		clearInterval(Sburb.updateLoop);
-		clearInterval(Sburb.drawLoop);
-		Sburb.updateLoop = Sburb.drawLoop = null;
+		Sburb.updateLoop = null;
+		Sburb.drawLoop.stop();
 	}
 	Sburb.assetManager.start();
 }
 
-function update(){
+Sburb.update = function update(){
 	//update stuff
 	handleAudio();
 	handleInputs();
@@ -435,7 +620,7 @@ function update(){
 	updateWait();
 }
 
-function draw(){
+Sburb.draw = function draw(){
 	//stage.clearRect(0,0,Stage.width,Stage.height);
 	if(!Sburb.playingMovie){
 		Sburb.stage.save();
@@ -867,8 +1052,5 @@ Sburb.playMovie = function(movie){
 
 Sburb.startUpdateProcess = startUpdateProcess;
 Sburb.haltUpdateProcess = haltUpdateProcess;
-Sburb.draw = draw;
 return Sburb;
 })(Sburb || {});
-
-
