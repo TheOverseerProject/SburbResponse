@@ -98,15 +98,18 @@ Sburb.SpriteButton.prototype.moveToward = function(sprite,speed){
 	if(typeof speed != "number"){
 		speed = 100;
 	}
-	speed = speed/Sburb.interpolationPercentage;
+	this.oldX = sprite.x;
+	this.oldY = sprite.y;
 	if(Math.abs(sprite.x-sprite.pos.x)>speed){
 		sprite.x+=speed*Math.abs(sprite.pos.x-sprite.x)/(sprite.pos.x-sprite.x);
+		sprite.x=this.oldX + (sprite.x - this.oldX) * Sburb.interpolationPercentage;
 	}else{
 		sprite.x = sprite.pos.x;
 	}
 
 	if(Math.abs(sprite.y-sprite.pos.y)>speed){
 		sprite.y+=speed*Math.abs(sprite.pos.y-sprite.y)/(sprite.pos.y-sprite.y);
+		sprite.y=this.oldY + (sprite.y - this.oldY) * Sburb.interpolationPercentage;
 	}else{
 		sprite.y = sprite.pos.y;
 	}

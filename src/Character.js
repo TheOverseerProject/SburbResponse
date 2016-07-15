@@ -9,7 +9,7 @@ var Sburb = (function(Sburb){
 Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,bootstrap){
 	Sburb.Sprite.call(this,name,x,y,width,height,null,null,Sburb.Sprite.prototype.MG_DEPTHING,true);
 
-	this.speed = 12;
+	this.speed = 14;
 	this.vx = 0;
 	this.vy = 0;
 	this.facing = "Front";
@@ -22,8 +22,8 @@ Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,boot
 	this.handledInput = -1;
 	this.oldX = 0;
 	this.oldY = 0;
-	
-	this.interpolatedSpeed = 12;
+
+	this.interpolationPercentage = 1;
 
 	if(!bootstrap){ //automagically generate standard animations
 		sWidth = typeof sWidth == "number" ? sWidth : width;
@@ -37,6 +37,8 @@ Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,boot
 		this.addAnimation(new Sburb.Animation("walkRight",sheet,sx,sy,sWidth,sHeight,6,2,4));
 		this.addAnimation(new Sburb.Animation("walkBack",sheet,sx,sy,sWidth,sHeight,8,2,4));
 		this.addAnimation(new Sburb.Animation("walkLeft",sheet,sx,sy,sWidth,sHeight,10,2,4));
+
+
 		this.startAnimation("walkFront");
 	}else{
 		this.bootstrap = true;
@@ -51,7 +53,7 @@ Sburb.Character.prototype.followBufferLength = 6;
 
 //update as if one frame has passed
 Sburb.Character.prototype.update = function(curRoom){
-	this.interpolatedSpeed= Math.max(this.speed*Sburb.interpolationPercentage,.8*this.speed); //.8 because otherwise this thing is unbearably slow
+	this.interpolationPercentage = Math.max(Sburb.interpolationPercentage, .9);
 	this.handleFollowing(curRoom);
 
 	//what does this code block do????
@@ -94,14 +96,14 @@ Sburb.Character.prototype.handleFollowing = function(curRoom){
 			}else{
 				delta = {x:destPos.x-this.x,y:destPos.y-this.y};
 			}
-			if(Math.abs(delta.x)>=this.interpolatedSpeed/1.9){
+			if(Math.abs(delta.x)>=this.speed/1.9){
 				if(delta.x>0){
 					keys.push(Sburb.Keys.right);
 				}else{
 					keys.push(Sburb.Keys.left);
 				}
 			}
-			if(Math.abs(delta.y)>=this.interpolatedSpeed/1.9){
+			if(Math.abs(delta.y)>=this.speed/1.9){
 				if(delta.y>0){
 					keys.push(Sburb.Keys.down);
 				}else{
@@ -122,8 +124,8 @@ Sburb.Character.prototype.handleFollowing = function(curRoom){
 		}
 		if(this.followBuffer.length<=this.followBufferLength && !this.following.isNPC()){
 			if(destPos){
-				this.x = destPos.x;
-				this.y = destPos.y;
+				this.x = this.oldX + (destPos.x - this.oldX) *this.interpolationPercentage;
+				this.y = this.oldY + (destPos.y - this.oldY) *this.interpolationPercentage;
 			}
 			this.moveNone();
 		}
@@ -135,10 +137,10 @@ Sburb.Character.prototype.moveUp = function(movingSideways){
 	if(!movingSideways){
 		this.facing = "Back";
 		this.walk();
-		this.vx = 0; this.vy = -this.interpolatedSpeed;
+		this.vx = 0; this.vy = -this.speed;
 	}else{
 		this.vx*=2/3;
-		this.vy = -this.interpolatedSpeed*2/3;
+		this.vy = -this.speed*2/3;
 	}
 }
 
@@ -147,10 +149,10 @@ Sburb.Character.prototype.moveDown = function(movingSideways){
 	if(!movingSideways){
 		this.facing = "Front";
 		this.walk();
-		this.vx = 0; this.vy = this.interpolatedSpeed;
+		this.vx = 0; this.vy = this.speed;
 	}else{
 		this.vx*=2/3;
-		this.vy = this.interpolatedSpeed*2/3;
+		this.vy = this.speed*2/3;
 	}
 }
 
@@ -158,14 +160,14 @@ Sburb.Character.prototype.moveDown = function(movingSideways){
 Sburb.Character.prototype.moveLeft = function(){
 	this.facing = "Left";
 	this.walk();
-	this.vx = -this.interpolatedSpeed; this.vy = 0;
+	this.vx = -this.speed; this.vy = 0;
 }
 
 //impulse character to move right
 Sburb.Character.prototype.moveRight = function(){
 	this.facing = "Right";
 	this.walk();
-	this.vx = this.interpolatedSpeed; this.vy = 0;
+	this.vx = this.speed; this.vy = 0;
 }
 
 //impulse character to stand still
@@ -217,7 +219,7 @@ Sburb.Character.prototype.handleInputs = function(pressed, order){
         this.moveRight();
     }else{
     	movingSideways = false;
-    } 
+    }
     var most  = Math.max(up, down, none);
     var movingVertical = true;
     if(down == most) {
@@ -236,7 +238,7 @@ Sburb.Character.prototype.handleInputs = function(pressed, order){
 
 //have character try to move through room
 Sburb.Character.prototype.tryToMove = function(vx,vy,room){
-	
+
 	var i;
 	var moveMap = room.getMoveFunction(this);
 	var wasShifted = false;
@@ -259,15 +261,15 @@ Sburb.Character.prototype.tryToMove = function(vx,vy,room){
 		var dy = 0;
 		if(Math.abs(vx)>=minX){
 			dx=Math.round((minX)*vx/Math.abs(vx));
-			this.x+=dx;
+			this.x=this.oldX + (this.x+dx - this.oldX) *this.interpolationPercentage;
 			vx-=dx;
 		}
 		if(Math.abs(vy)>=minY){
 			dy=Math.round((minY)*vy/Math.abs(vy));
-			this.y+=dy;
+			this.y=this.oldY + (this.y+dy - this.oldY) *this.interpolationPercentage;
 			vy-=dy;
 		}
-		
+
 		if(!this.following){
 			var collision;
 			if(collision = room.collides(this)){
@@ -275,42 +277,42 @@ Sburb.Character.prototype.tryToMove = function(vx,vy,room){
 				if(dx!=0){
 					if(!this.collides(collision,0,minY)){
 						dy+=minY;
-						this.y+=minY;
+						this.y=this.oldY + (this.y+minY - this.oldY) *this.interpolationPercentage;
 						fixed = true;
 					}else if(!this.collides(collision,0,-minY)){
 						dy-=minY;
-						this.y-=minY;
+						this.y=this.oldY + (this.y-minY - this.oldY) *this.interpolationPercentage;
 						fixed = true;
 					}
 				}
 				if(!fixed && dy!=0){
 					if(!this.collides(collision,minX,0)){
 						dx+=minX;
-						this.x+=minX;
+						this.x=this.oldX + (this.x+minX - this.oldX) *this.interpolationPercentage;
 						fixed = true;
 					}else if(!this.collides(collision,-minX,0)){
 						dx-=minX;
-						this.x-=minX;
+						this.x=this.oldX + (this.x-minX - this.oldX) *this.interpolationPercentage;
 						fixed = true;
 					}
 				}
 				if(!fixed || room.collides(this)){
-					this.x-=dx;
-					this.y-=dy;
+					this.x=this.oldX + (this.x-dx - this.oldX) *this.interpolationPercentage;
+					this.y=this.oldY + (this.y-dy - this.oldY) *this.interpolationPercentage;
 					return false;
 				}
 			}
-		
+
 			if(!room.isInBounds(this)){
 				var fixed = false;
 				if(dx!=0){
 					if(room.isInBounds(this,0,minY)){
 						dy+=minY;
-						this.y+=minY;
+						this.y=this.oldY + (this.y+minY - this.oldY) *this.interpolationPercentage;
 						fixed = true;
 					}else if(room.isInBounds(this,0,-minY)){
 						dy-=minY;
-						this.y-=minY;
+						this.y=this.oldY + (this.y-minY - this.oldY) *this.interpolationPercentage;
 						fixed = true;
 					}
 				}
@@ -318,21 +320,22 @@ Sburb.Character.prototype.tryToMove = function(vx,vy,room){
 					if(room.isInBounds(this,minX,0)){
 						dx+=minX;
 						this.x+=minX;
+						this.x=this.oldX + (this.x - this.oldX) *this.interpolationPercentage;
 						fixed = true;
 					}else if(room.isInBounds(this,-minX,0)){
 						dx-=minX;
-						this.x-=minX;
+						this.x=this.oldX + (this.x-minX - this.oldX) *this.interpolationPercentage;
 						fixed = true;
 					}
 				}
 				if(!fixed || room.collides(this)){
-					this.x-=dx;
-					this.y-=dy;
+					this.x=this.oldX + (this.x-dx - this.oldX) *this.interpolationPercentage;
+					this.y=this.oldY + (this.y-dy - this.oldY) *this.interpolationPercentage;
 					return false;
 				}
 			}
 		}
-	}	
+	}
 	return true;
 }
 
@@ -421,7 +424,7 @@ Sburb.Character.prototype.serialize = function(output){
 	for(var i=0; i < this.actions.length; i++){
 		output = this.actions[i].serialize(output);
 	}
-	
+
 	output = output.concat("\n</character>");
 	return output;
 }
@@ -453,26 +456,26 @@ Sburb.parseCharacter = function(charNode, assetFolder) {
   				    parseInt(attributes.getNamedItem("sWidth").value),
   				    parseInt(attributes.getNamedItem("sHeight").value),
   				    assetFolder[attributes.getNamedItem("sheet").value]);
-  	
+
   	var temp = attributes.getNamedItem("following");
   	if(temp){
   		var following = Sburb.sprites[temp.value];
   		if(following){
   			newChar.follow(following);
   		}
-  	} 			 
+  	}
   	var temp = attributes.getNamedItem("follower");
   	if(temp){
   		var follower = Sburb.sprites[temp.value];
   		if(follower){
   			follower.follow(newChar);
   		}
-  	} 	   
-  	
+  	}
+
   	var anims = charNode.getElementsByTagName("animation");
 	for(var j=0;j<anims.length;j++){
 		var newAnim = Sburb.parseAnimation(anims[j],assetFolder);
-		newChar.addAnimation(newAnim); 
+		newChar.addAnimation(newAnim);
 	}
   	newChar.startAnimation(attributes.getNamedItem("state").value);
   	newChar.facing = attributes.getNamedItem("facing").value;

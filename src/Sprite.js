@@ -10,6 +10,8 @@ var Sburb = (function(Sburb){
 function Sprite(name,x,y,width,height,dx,dy,depthing,collidable){
 	this.x = x;
 	this.y = y;
+	this.oldX = 0;
+	this.oldY = 0;
 	this.dx = typeof dx == "number" ? dx : 0;
 	this.dy = typeof dy == "number" ? dy : 0;
 	this.width = width;
@@ -148,7 +150,7 @@ Sprite.prototype.serialize = function(output){
         if(!this.animations.hasOwnProperty(anim)) continue;
         animationCount++;
 	}
-	
+
 	output = output.concat("\n<sprite "+
 		Sburb.serializeAttributes(this,"name","x","y","dx","dy","width","height","depthing","collidable")+
 		(animationCount>1?"state='"+this.state+"' ":"")+
@@ -194,7 +196,7 @@ Sprite.prototype.clone = function(newName) {
 
 Sburb.parseSprite = function(spriteNode, assetFolder) {
 	var attributes = spriteNode.attributes;
-	
+
 	var newName = null;
 	var newX = 0;
 	var newY = 0;
@@ -218,10 +220,10 @@ Sburb.parseSprite = function(spriteNode, assetFolder) {
 	newDepthing = (temp=attributes.getNamedItem("depthing"))?parseInt(temp.value):newDepthing;
 	newCollidable = (temp=attributes.getNamedItem("collidable"))?temp.value!="false":newCollidable;
 	newState = (temp=attributes.getNamedItem("state"))?temp.value:newState;
-	
+
  	var newSprite = new Sprite(newName,newX,newY,newWidth,newHeight,newDx,newDy,newDepthing,newCollidable);
-	
-	
+
+
 	var anims = spriteNode.getElementsByTagName("animation");
 	for(var j=0;j<anims.length;j++){
 		var newAnim = Sburb.parseAnimation(anims[j],assetFolder);
@@ -238,7 +240,7 @@ Sburb.parseSprite = function(spriteNode, assetFolder) {
 		}
 	}
 	newSprite.startAnimation(newState);
-	
+
 	return newSprite;
 }
 
