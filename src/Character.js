@@ -23,6 +23,8 @@ Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,boot
 	this.oldX = 0;
 	this.oldY = 0;
 	
+	this.interpolatedSpeed = 12;
+
 	if(!bootstrap){ //automagically generate standard animations
 		sWidth = typeof sWidth == "number" ? sWidth : width;
 		sHeight = typeof sHeight == "number" ? sHeight : height;
@@ -35,15 +37,13 @@ Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,boot
 		this.addAnimation(new Sburb.Animation("walkRight",sheet,sx,sy,sWidth,sHeight,6,2,4));
 		this.addAnimation(new Sburb.Animation("walkBack",sheet,sx,sy,sWidth,sHeight,8,2,4));
 		this.addAnimation(new Sburb.Animation("walkLeft",sheet,sx,sy,sWidth,sHeight,10,2,4));
-	
-
 		this.startAnimation("walkFront");
 	}else{
 		this.bootstrap = true;
 	}
-	
+
 	this.becomeNPC();
-	
+
 }
 
 Sburb.Character.prototype = new Sburb.Sprite();
@@ -51,6 +51,7 @@ Sburb.Character.prototype.followBufferLength = 6;
 
 //update as if one frame has passed
 Sburb.Character.prototype.update = function(curRoom){
+	this.interpolatedSpeed= Math.max(this.speed*Sburb.interpolationPercentage,.8*this.speed); //.8 because otherwise this thing is unbearably slow
 	this.handleFollowing(curRoom);
 
 	//what does this code block do????
@@ -75,12 +76,12 @@ Sburb.Character.prototype.handleFollowing = function(curRoom){
 			this.becomePlayer();
 			this.collidable = false;
 		}
-		
+
 		if(this.following.x!=this.lastLeaderPos.x || this.following.y!=this.lastLeaderPos.y){
 			this.followBuffer.push({x:this.following.x,y:this.following.y});
 			this.lastLeaderPos.x = this.following.x;
 			this.lastLeaderPos.y = this.following.y;
-			
+
 		}
 		var destPos = null;
 		while(this.followBuffer.length>this.followBufferLength){
@@ -93,14 +94,14 @@ Sburb.Character.prototype.handleFollowing = function(curRoom){
 			}else{
 				delta = {x:destPos.x-this.x,y:destPos.y-this.y};
 			}
-			if(Math.abs(delta.x)>=this.speed/1.9){
+			if(Math.abs(delta.x)>=this.interpolatedSpeed/1.9){
 				if(delta.x>0){
 					keys.push(Sburb.Keys.right);
 				}else{
 					keys.push(Sburb.Keys.left);
 				}
 			}
-			if(Math.abs(delta.y)>=this.speed/1.9){
+			if(Math.abs(delta.y)>=this.interpolatedSpeed/1.9){
 				if(delta.y>0){
 					keys.push(Sburb.Keys.down);
 				}else{
@@ -134,10 +135,10 @@ Sburb.Character.prototype.moveUp = function(movingSideways){
 	if(!movingSideways){
 		this.facing = "Back";
 		this.walk();
-		this.vx = 0; this.vy = -this.speed;
+		this.vx = 0; this.vy = -this.interpolatedSpeed;
 	}else{
 		this.vx*=2/3;
-		this.vy = -this.speed*2/3;
+		this.vy = -this.interpolatedSpeed*2/3;
 	}
 }
 
@@ -146,10 +147,10 @@ Sburb.Character.prototype.moveDown = function(movingSideways){
 	if(!movingSideways){
 		this.facing = "Front";
 		this.walk();
-		this.vx = 0; this.vy = this.speed;
+		this.vx = 0; this.vy = this.interpolatedSpeed;
 	}else{
 		this.vx*=2/3;
-		this.vy = this.speed*2/3;
+		this.vy = this.interpolatedSpeed*2/3;
 	}
 }
 
@@ -157,14 +158,14 @@ Sburb.Character.prototype.moveDown = function(movingSideways){
 Sburb.Character.prototype.moveLeft = function(){
 	this.facing = "Left";
 	this.walk();
-	this.vx = -this.speed; this.vy = 0;
+	this.vx = -this.interpolatedSpeed; this.vy = 0;
 }
 
 //impulse character to move right
 Sburb.Character.prototype.moveRight = function(){
 	this.facing = "Right";
 	this.walk();
-	this.vx = this.speed; this.vy = 0;
+	this.vx = this.interpolatedSpeed; this.vy = 0;
 }
 
 //impulse character to stand still
