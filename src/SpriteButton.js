@@ -98,6 +98,7 @@ Sburb.SpriteButton.prototype.moveToward = function(sprite,speed){
 	if(typeof speed != "number"){
 		speed = 100;
 	}
+	speed = speed/Sburb.interpolationPercentage;
 	if(Math.abs(sprite.x-sprite.pos.x)>speed){
 		sprite.x+=speed*Math.abs(sprite.pos.x-sprite.x)/(sprite.pos.x-sprite.x);
 	}else{

@@ -266,6 +266,7 @@ Sburb.Dialoger.prototype.moveToward = function(sprite,pos,speed){
 	if(typeof speed != "number"){
 		speed = 100;
 	}
+	speed=speed*Sburb.interpolationPercentage;
 	if(Math.abs(sprite.x-pos.x)>speed){
 		sprite.x+=speed*Math.abs(pos.x-sprite.x)/(pos.x-sprite.x);
 	}else{

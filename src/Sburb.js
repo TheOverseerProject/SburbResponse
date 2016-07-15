@@ -29,10 +29,11 @@ Array.prototype.destroy = function(obj) {
 
 var Sburb = (function(Sburb){
 
+Sburb.interpolationPercentage = 1;
 //the draw loop
 //MainLoop (modified) - Isaac Sukin MIT Licensed
 var simulationTimestep = 1000 / 30,
-    frameDelta = 0,
+	frameDelta = 0,
     lastFrameTimeMs = 0,
     fps = 30,
     lastFpsUpdate = 0,
@@ -181,13 +182,14 @@ function animate(timestamp) {
 
     numUpdateSteps = 0;
     while (frameDelta >= simulationTimestep) {
-        update(simulationTimestep);
         frameDelta -= simulationTimestep;
+        update();
         if (++numUpdateSteps >= 240) {
             panic = true;
             break;
         }
     }
+    Sburb.interpolationPercentage=frameDelta/simulationTimestep;
     draw();
 
     end(panic);
@@ -817,7 +819,6 @@ function hasControl(){
 }
 
 function focusCamera(){
-	//need to divide these by scaleX and scaleY if repurposed
 	if(!Sburb.destFocus){
 		if(Sburb.focus){
 			Sburb.cam.x = Sburb.focus.x-Sburb.Stage.width/2;
@@ -1054,3 +1055,5 @@ Sburb.startUpdateProcess = startUpdateProcess;
 Sburb.haltUpdateProcess = haltUpdateProcess;
 return Sburb;
 })(Sburb || {});
+
+
