@@ -45,8 +45,8 @@ Sburb.AssetManager = function() {
         "ttf": "application/x-font-ttf",
         "woff": "application/x-font-woff",
         "otf": "application/x-font-opentype",
-        "swf": "application/x-shockwave-flash",
-        "flv": "application/x-shockwave-flash"
+        "mp4": "video/mp4",
+        "webm": "video/webm"
     };
 }
 
@@ -700,7 +700,7 @@ Sburb.createMovieAsset = function(name,path){
     
     ret.done = function(url) {
         ret.src = url;
-        Sburb.Bins["movie"].innerHTML += '<div id="'+name+'"><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" id="movie" width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'"><param name="allowScriptAccess" value="always" /\><param name="wmode" value="transparent"/\><param name="movie" value="'+ret.src+'" /\><param name="quality" value="high" /\><embed src="'+ret.src+'" quality="high" WMODE="transparent" width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'" swLiveConnect="true" id="movie'+name+'" name="movie'+name+'" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /\></object></div>';
+        Sburb.Bins["movie"].innerHTML += '<div id="'+name+'"><video width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'"><source src="'+ret.src+'" type="video/mp4">Your browser does not support the video tag.</video></div>';
         document.getElementById(name).style.display = "none";
     }
     ret.success = function(url) { ret.done(url); ret.loaded = true; };
