@@ -1047,6 +1047,7 @@ Sburb.playSound = function(sound){
 Sburb.playMovie = function(movie){
 	var name = movie.name;
 	document.getElementById(name).style.display = "block";
+	document.getElementById("movie"+name).play();
 	Sburb.waitFor = new Sburb.Trigger("movie,"+name+",5");
 	Sburb.playingMovie = true;
 }
