@@ -220,15 +220,7 @@ commands.depthSprite = function(info){
 commands.playMovie = function(info){
 	var params = parseParams(info);
 	Sburb.playMovie(Sburb.assets[params[0]]);
-	if(params.length>0){
-		var interval = setInterval(function(){
-			var movie = window.document.getElementById("movie"+params[0]);
-			if(movie && (!movie.CurrentFrame || movie.CurrentFrame()>=4)){
-				clearInterval(interval);
-				commands.playSong(info.substring(info.indexOf(",")+1,info.length));
-			}
-		},10);
-	}
+	var movie = window.document.getElementById("movie"+params[0]);
 }
 
 //Remove the specified flash movie
