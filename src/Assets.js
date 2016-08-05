@@ -700,7 +700,7 @@ Sburb.createMovieAsset = function(name,path){
     
     ret.done = function(url) {
         ret.src = url;
-        Sburb.Bins["movie"].innerHTML += '<div id="'+name+'"><video width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'"><source src="'+ret.src+'" type="video/mp4">Your browser does not support the video tag.</video></div>';
+        Sburb.Bins["movie"].innerHTML += '<div id="'+name+'"><video id="movie'+name+'" width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'"><source src="'+ret.src+'" type="video/mp4">Your browser does not support the video tag.</video></div>';
         document.getElementById(name).style.display = "none";
     }
     ret.success = function(url) { ret.done(url); ret.loaded = true; };
