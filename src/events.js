@@ -136,13 +136,11 @@ events.played = function(info) {
 //syntax: movieName
 events.movie = function(info) {
 	var params = parseParams(info);
-	var threshold = parseInt(params[2]);
 	this.reset = function() {
 		this.movie = window.document.getElementById("movie"+params[1]);
 	}
 	this.checkCompletion = function(){
-		if(this.movie && (!this.movie.TotalFrames || 
-				  (this.movie.TotalFrames()>0 && this.movie.TotalFrames()-1-this.movie.CurrentFrame()<=threshold))){
+		if(this.movie && this.movie.currentTime > 0 && this.movie.paused && this.movie.ended && this.movie.readyState < 3){
 			Sburb.commands.removeMovie(params[1]);
 			return true;
 		}
