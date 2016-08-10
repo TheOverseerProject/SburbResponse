@@ -10,4 +10,4 @@ This is mainly for a personal project, but here are the tasks if anyone would li
   * Full screening the game only works on non-Safari browsers, and even THEN w3c standards frowns upon it if it's not a direct onClick event.
 - [x] Remove Flash support, add mp4 
 - [ ] ...and webm
-- [ ] Figure out how to initiate "autoplay" with a hidden user generated trigger, for mobile
+- [x] Figure out how to initiate "autoplay" with a hidden user generated trigger, for mobile
