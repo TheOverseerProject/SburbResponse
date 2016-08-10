@@ -220,7 +220,6 @@ commands.depthSprite = function(info){
 commands.playMovie = function(info){
 	var params = parseParams(info);
 	Sburb.playMovie(Sburb.assets[params[0]]);
-	var movie = window.document.getElementById("movie"+params[0]);
 }
 
 //Remove the specified flash movie
