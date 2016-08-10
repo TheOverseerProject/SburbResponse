@@ -210,6 +210,7 @@ else if (typeof module === 'object' && module !== null && typeof module.exports 
 Sburb.end = function end(panic) {
     if (panic) {
         var discardedTime = Math.round(Sburb.drawLoop.resetFrameDelta());
+        purgeKeys();
         console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
     }
 }
@@ -435,7 +436,6 @@ Sburb.initialize = function(div,levelName,includeDevTools){
     gameCanvas.tabIndex = 0;
 	gameCanvas.scaleX = gameCanvas.scaleY = 3;
 	gameCanvas.x = gameCanvas.y = 0;
-	gameCanvas.fps = 30;
 	gameCanvas.fade = 0;
 	gameCanvas.fadeRate = 0.1;
     gameCanvas.innerText = "ERROR: Your browser is too old to display this content!";
@@ -595,6 +595,9 @@ function startUpdateProcess(){
 	Sburb.drawLoop.setUpdate(Sburb.update).setDraw(Sburb.draw).setEnd(Sburb.end).start();
 	Sburb.updateLoop=true;
 	Sburb.assetManager.stop();
+	if(!Sburb.bgm.playing){
+		Sburb.bgm.play();
+	}
 }
 
 function haltUpdateProcess(){
@@ -607,7 +610,6 @@ function haltUpdateProcess(){
 
 Sburb.update = function update(){
 	//update stuff
-	handleAudio();
 	handleInputs();
 	handleHud();
 
@@ -757,30 +759,6 @@ function getQ(x,y) {
 		}
 	}
     return qKey;
-}
-
-function handleAudio(){
-	if(Sburb.bgm && Sburb.bgm.asset){
-		if(Sburb.bgm.asset.ended || Sburb.bgm.asset.currentTime>=Sburb.bgm.asset.duration ){
-			Sburb.bgm.loop();
-		}
-		if (Sburb.lastMusicTime == Sburb.bgm.asset.currentTime){
-			Sburb.musicStoppedFor++;
-			if(Sburb.musicStoppedFor>4){
-		    Sburb.bgm.asset.pause();
-		    Sburb.bgm.asset.play(); // asset.play() because sometimes this condition is true on startup
-		  }
-    }else{
-    	Sburb.musicStoppedFor = 0;
-    }
-		if(Sburb.bgm.asset.paused){
-		//	console.log("The sound is paused??? THIS SHOULD NOT BE.");
-			Sburb.bgm.play();
-		}
-		Sburb.lastMusicTime = Sburb.bgm.asset.currentTime;
-	}else{
-		//console.log("The music doesn't exist!");
-	}
 }
 
 function handleInputs(){
@@ -1023,7 +1001,7 @@ Sburb.setCurRoomOf = function(sprite){
 Sburb.changeBGM = function(newSong) {
     if(newSong){
 		if(Sburb.bgm) {
-			if (Sburb.bgm.asset == newSong.asset && Sburb.bgm.startLoop == newSong.startLoop) {
+			if (Sburb.bgm.asset == newSong.asset) {
 				// maybe check for some kind of restart value
 				return;
 			}
