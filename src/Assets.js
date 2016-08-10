@@ -586,20 +586,18 @@ Sburb.createAudioAsset = function(name,sources) {
             loaded: true,
             instant: true,
             paused: true,
-            ended: true,
             currentTime: 0,
             duration: 0,
             load: function() {},
             play: function() {},
             loop: function() {},
-            pause: function() {},
+            playing: function() {},
             addEventListener: function() {},
         };
     }
-    var ret = new Audio();
-    ret.name = name
+    var ret = new Howl({ src: ['resources\\sample\\'+sources[0],'resources\\sample\\'+sources[1]], preload: true }); //TODO not this.
+    ret.name = name;
     ret.type = "audio";
-    ret.preload = true;
     ret.originalVals = sources;
     // Ajax Shenanigans
     // Load each source, call success or failure for each
@@ -612,7 +610,7 @@ Sburb.createAudioAsset = function(name,sources) {
     ret.checkLoaded = function() {
         if(!ret.loaded) {
             ret.check_count -= 1;
-            if(ret.readyState == 4) {
+            if(ret.state() === 'loaded') {
                 delete Sburb.assetManager.recurrences[name];
                 ret.isLoaded();
             } else if(!ret.check_count) {
@@ -650,13 +648,10 @@ Sburb.createAudioAsset = function(name,sources) {
         }
     };
     ret.success = function(url,id,notBlob) {
-        var tmp = document.createElement("source");
-        tmp.src = url;
-        ret.appendChild(tmp);
+        ret.src = url;
         ret.remaining -= 1;
         if(!ret.remaining) {
-	        if(window.chrome) ret.load();
-            ret.addEventListener('loadeddata', ret.isLoaded, false);
+            ret.on('load', ret.isLoaded, false);
 	        if(!notBlob) {
                 Sburb.assetManager.recurrences[name] = setTimeout(ret.checkLoaded, ret.check_interval);
             }
