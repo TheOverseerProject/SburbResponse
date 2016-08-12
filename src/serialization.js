@@ -9,7 +9,7 @@ var updateLoop = null;
 var jsonUpdateLoop = null;
 
 //Save the current state to xml
-Sburb.serialize = function(sburbInst) { 
+Sburb.serialize = function(sburbInst) {
 	var assets = sburbInst.assets;
 	var effects = sburbInst.effects;
 	var rooms = sburbInst.rooms;
@@ -64,7 +64,7 @@ Sburb.serialize = function(sburbInst) {
 //   auto (Boolean) If true this save is an auto save, false it is not
 //   local (Boolean) If true, use localStorage, if false, use sessionStorage
 // Returns:
-//   (Boolean) False if storage is not supported by browser, true otherwise 
+//   (Boolean) False if storage is not supported by browser, true otherwise
 ///
 Sburb.saveStateToStorage = function(description, auto, local)
 {
@@ -103,7 +103,7 @@ Sburb.saveStateToStorage = function(description, auto, local)
 //   auto (Boolean) If true loads the auto save, else it loads the manual save
 //   local (Boolean) If true, use localStorage, if false, use sessionStorage
 // Returns:
-//   (Boolean) False if storage is not supported by browser or save does not exist, true otherwise 
+//   (Boolean) False if storage is not supported by browser or save does not exist, true otherwise
 ///
 Sburb.loadStateFromStorage = function(auto, local)
 {
@@ -153,7 +153,7 @@ Sburb.loadStateFromStorage = function(auto, local)
 		return false;
 	var decoded = Iuppiter.decompress(Iuppiter.Base64.decode(Iuppiter.toByteArray(compressed),true)).replace(/\0/g,"");
 	Sburb.loadSerial(decoded);
-	
+
 	return true;
 }
 ///
@@ -164,7 +164,7 @@ Sburb.loadStateFromStorage = function(auto, local)
 //   (String) Description of save, returns "" if no description is found or storage is not supported
 ///
 Sburb.getStateDescription = function(auto, local)
-{	
+{
 	auto = typeof auto !== 'undefined' ? auto : false;
 	local = typeof local !== 'undefined' ? local : false;
 
@@ -368,7 +368,7 @@ function serializeRooms(output, rooms)
 
 	return output;
 }
-function serializeGameState(output, gameState) 
+function serializeGameState(output, gameState)
 {
 	output = output.concat("\n<gameState>\n");
 	for(var key in gameState) {
@@ -380,7 +380,7 @@ function serializeGameState(output, gameState)
 	return output;
 }
 
-function serializeActionQueues(output, actionQueues) 
+function serializeActionQueues(output, actionQueues)
 {
 	output = output.concat("<actionQueues>");
 	for(var i=0;i<actionQueues.length;i++) {
@@ -522,7 +522,7 @@ function purgeState(){
 	Sburb.nextQueueId = 0;
 	Sburb.pressed = {};
 	Sburb.pressedOrder = [];
-	Sburb.chooser = new Sburb.Chooser();
+	Sburb.choices = [];
 	Sburb.dialoger = null;
 	Sburb.curRoom = null;
 	Sburb.char = null;
@@ -535,15 +535,15 @@ function purgeState(){
 Sburb.loadSerialFromXML = function(file,keepOld) {
 	Sburb.haltUpdateProcess();
 	file = Sburb.assetManager.levelPath+file;
-	
+
 	if(keepOld && Sburb.loadedFiles[file]){
 		Sburb.startUpdateProcess();
 		return;
 	}else{
 		Sburb.loadedFiles[file] = true;
 	}
-	
-	
+
+
 	var request = new XMLHttpRequest();
     request.open('GET', file, false);
     try {
@@ -553,7 +553,7 @@ Sburb.loadSerialFromXML = function(file,keepOld) {
 		fi = document.getElementById("levelFile");
 		return;
     }
-    if (request.status === 200 || request.status == 0) { 
+    if (request.status === 200 || request.status == 0) {
         try {
             loadSerial(request.responseText, keepOld);
         } catch(err) {
@@ -576,9 +576,9 @@ function loadSerial(serialText, keepOld) {
 
     var inText = serialText; //document.getElementById("serialText");
     var input = Sburb.parseXML(inText);
-	
+
 	if(!keepOld) {
-    	purgeAssets(); 
+    	purgeAssets();
     	purgeState();
     }
 
@@ -590,7 +590,7 @@ function loadSerial(serialText, keepOld) {
     	Sburb.assetManager.levelPath = levelPath.value.charAt(levelPath.value.length-1)=="/" ?
     		levelPath.value : levelPath.value+"/";
     }
-    
+
     var resourcePath = rootAttr.getNamedItem("resourcePath");
     if(resourcePath){
     	Sburb.assetManager.resourcePath = resourcePath.value;
@@ -630,18 +630,18 @@ function loadSerial(serialText, keepOld) {
     loadingDepth--;
     loadSerialAssets(input);
 	loadQueue.push(input);
-	loadSerialState(input); 
+	loadSerialState(input);
 }
 
 Sburb.parseXML = function(inText) {
     var parser=new DOMParser();
     var parsed=parser.parseFromString(inText,"text/xml");
-    
+
     if (parsed.getElementsByTagName("parsererror").length>0) {
         var error = parsed.getElementsByTagName("parsererror")[0];
         throw new XMLParsingError(error, inText);
     }
-    
+
     return parsed.documentElement;
 }
 
@@ -667,7 +667,7 @@ function parseXMLError(n) {
 }
 
 function loadDependencies(input){
-    
+
 	var dependenciesNode = input.getElementsByTagName("dependencies")[0];
 	if(dependenciesNode){
 		var dependencies = dependenciesNode.getElementsByTagName("dependency");
@@ -680,14 +680,14 @@ function loadDependencies(input){
 
 function loadSerialAssets(input){
 	var rootAttr = input.attributes;
-    
+
   var description = rootAttr.getNamedItem("description");
   if(description){
   	Sburb.assetManager.description = description.value;
   }else{
   	Sburb.assetManager.description = "assets"
   }
-  
+
   var newAssets = input.getElementsByTagName("asset");
   for(var i=0;i<newAssets.length;i++){
 		var curAsset = newAssets[i];
@@ -755,7 +755,7 @@ function loadSerialState() {
 		updateLoop=setTimeout(function() { loadSerialState(); } ,500);
 		return;
   }
-  
+
   while(loadQueue.length>0){
 		var input = loadQueue[0];
 		loadQueue.splice(0,1);
@@ -765,19 +765,18 @@ function loadSerialState() {
 		parseButtons(input);
 		parseSprites(input);
 		parseCharacters(input);
-		parseFighters(input);
 		parseRooms(input);
-		parseGameState(input);	
-	
+		parseGameState(input);
+
 		parseHud(input);
 		parseEffects(input);
-	
+
 		//should be last
 		parseState(input);
 		//Relies on Sburb.nextQueueId being set when no Id is provided
 		parseActionQueues(input);
   }
-  
+
   if(loadQueue.length==0 && loadingDepth==0){
 		Sburb.startUpdateProcess();
 	}
@@ -810,7 +809,7 @@ function parseTemplateClasses(input){
 		var templates = classes[0].childNodes;
 		for(var i=0;i<templates.length;i++){
 			var templateNode = templates[i];
-			
+
 			if(templateNode.nodeName!="#text" && templateNode.nodeName!="#comment"){
 				applyTemplateClasses(templateNode);
 			 	var tempAttributes = templateNode.attributes;
@@ -868,7 +867,7 @@ function parseButtons(input){
 }
 
 function parseSprites(input){
-	
+
 	var newSprites = input.getElementsByTagName("sprite");
 	for(var i=0;i<newSprites.length;i++){
 		var curSprite = newSprites[i];
@@ -898,16 +897,6 @@ function parseCharacters(input){
 			var newChar = Sburb.parseCharacter(curChar, Sburb.assets);
   		Sburb.sprites[newChar.name] = newChar;
   		parseActions(curChar,newChar);
-  	}
-}
-
-function parseFighters(input){
-	var newFighters = input.getElementsByTagName("fighter");
-  	for(var i=0;i<newFighters.length;i++){
-  		var curFighter = newFighters[i];
-			var newFighter = Sburb.parseFighter(curFighter, Sburb.assets);
-  		Sburb.sprites[newFighter.name] = newFighter;
-  		parseActions(curFighter,newFighter);
   	}
 }
 
@@ -955,28 +944,28 @@ function parseActionQueues(input){
 
 function parseState(input){
 	var rootInfo = input.attributes;
-  	
+
   	var char = rootInfo.getNamedItem("char");
   	if(char){
 	  	Sburb.focus = Sburb.char = Sburb.sprites[char.value];
 	  	Sburb.char.becomePlayer();
 	}
-  	
+
   	var mode = rootInfo.getNamedItem("mode");
   	if(mode){
   		Sburb.engineMode = mode.value;
   	}
-  	
+
   	var scale = rootInfo.getNamedItem("scale");
   	if(scale){
   		Sburb.Stage.scaleX = Sburb.Stage.scaleY = parseInt(scale.value);
   	}
-  	
+
   	var nextQueueId = rootInfo.getNamedItem("nextQueueId");
   	if(nextQueueId){
   		Sburb.nextQueueId = parseInt(nextQueueId.value);
   	}
-  	
+
   	var curRoom = rootInfo.getNamedItem("curRoom");
   	if(curRoom){
   		Sburb.curRoom = Sburb.rooms[curRoom.value];
@@ -997,7 +986,7 @@ function parseState(input){
   		var params = bgm.value.split(",");
   		Sburb.changeBGM(new Sburb.BGM(Sburb.assets[params[0]],parseFloat(params.length>1?params[1]:"0")));
   	}
-  	
+
   	var initAction;
     var initActionName;
     if(rootInfo.getNamedItem("startAction")){
@@ -1076,7 +1065,7 @@ function serialLoadRoomSprites(newRoom, roomSprites, spriteFolder){
 		var curSprite = roomSprites[j];
 		var actualSprite = spriteFolder[curSprite.attributes.getNamedItem("name").value];
 		newRoom.addSprite(actualSprite);
-	  
+
 	}
 }
 
@@ -1087,24 +1076,24 @@ function serialLoadRoomPaths(newRoom, paths, assetFolder) {
 		var attributes = node.attributes;
 		newRoom.addWalkable(assetFolder[attributes.getNamedItem("path").value]);
 	}
-	
+
 	var unwalkables = paths[0].getElementsByTagName("unwalkable");
 	for(var j=0;j<unwalkables.length;j++){
 		var node = unwalkables[j];
 		var attributes = node.attributes;
 		newRoom.addUnwalkable(assetFolder[attributes.getNamedItem("path").value]);
 	}
-	
+
 	var motionPaths = paths[0].getElementsByTagName("motionpath");
 	for(var j=0;j<motionPaths.length;j++) {
 		var node = motionPaths[j];
 		var attributes = node.attributes;
-		newRoom.addMotionPath(assetFolder[attributes.getNamedItem("path").value], 
-				      attributes.getNamedItem("xtox")?parseFloat(attributes.getNamedItem("xtox").value):1, 
-				      attributes.getNamedItem("xtoy")?parseFloat(attributes.getNamedItem("xtoy").value):0, 
-				      attributes.getNamedItem("ytox")?parseFloat(attributes.getNamedItem("ytox").value):0, 
-				      attributes.getNamedItem("ytoy")?parseFloat(attributes.getNamedItem("ytoy").value):1, 
-				      attributes.getNamedItem("dx")?parseFloat(attributes.getNamedItem("dx").value):0, 
+		newRoom.addMotionPath(assetFolder[attributes.getNamedItem("path").value],
+				      attributes.getNamedItem("xtox")?parseFloat(attributes.getNamedItem("xtox").value):1,
+				      attributes.getNamedItem("xtoy")?parseFloat(attributes.getNamedItem("xtoy").value):0,
+				      attributes.getNamedItem("ytox")?parseFloat(attributes.getNamedItem("ytox").value):0,
+				      attributes.getNamedItem("ytoy")?parseFloat(attributes.getNamedItem("ytoy").value):1,
+				      attributes.getNamedItem("dx")?parseFloat(attributes.getNamedItem("dx").value):0,
 				      attributes.getNamedItem("dy")?parseFloat(attributes.getNamedItem("dy").value):0);
 	}
 }

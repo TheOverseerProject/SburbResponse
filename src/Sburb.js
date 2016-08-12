@@ -247,7 +247,7 @@ Sburb.destX = null;
 Sburb.destY = null; //the desired location in the room we are transitioning to, if it exists.
 Sburb.focus = null; //the focus of the camera (a sprite), usually just the char
 Sburb.destFocus = null;
-Sburb.chooser = null; //the option chooser
+Sburb.choices = null; //the choices for where the player currently is
 Sburb.inputDisabled = false; //disables player-control
 Sburb.curAction = null; //the current action being performed
 Sburb.actionQueues = [] //additional queues for parallel actions
@@ -448,13 +448,6 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	hammertime.on('tap', function(e){
 		if(!Sburb.updateLoop) return; // Make sure we are loaded before trying to do things
 		Sburb.Mouse.down = true; //gets set to false in Sburb.SpriteButton.prototype.updateMouse
-		if(Sburb.engineMode=="strife" && hasControl()){
-				Sburb.chooser.choices = Sburb.curRoom.queryActionsVisual(Sburb.char,Sburb.Stage.x+Sburb.Mouse.x,Sburb.Stage.y+Sburb.Mouse.y);
-				if(Sburb.chooser.choices.length>0){
-					Sburb.chooser.choices.push(new Sburb.Action("cancel","cancel","cancel"));
-					beginChoosing();
-				}
-		}
 		var point = tapCoords(e,gameCanvas);
 		var mockSpace = {keyCode:Sburb.Keys.space};
 		Sburb.Mouse.x = point.x;
@@ -481,7 +474,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 		}
 	});
 
-	hammertime.on('pressup panend swipe', function(e) {
+	hammertime.on('pressup panend swipe pancancel', function(e) {
 		if(hasControl())
 			purgeKeys();
 	});
@@ -522,7 +515,6 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 
 	Sburb.stage = Sburb.Stage.getContext("2d");
 	Sburb.Stage.onblur = _onblur;
-	Sburb.chooser = new Sburb.Chooser();
 	Sburb.dialoger = null;
     Sburb.assetManager = new Sburb.AssetManager();
 	Sburb.assets = Sburb.assetManager.assets; // shortcut for raw asset access
@@ -618,7 +610,6 @@ Sburb.update = function update(){
 
 	focusCamera();
 	handleRoomChange();
-	Sburb.chooser.update();
 	Sburb.dialoger.update();
 	chainAction();
 	updateWait();
@@ -648,8 +639,6 @@ Sburb.draw = function draw(){
 		Sburb.Stage.offset = true;
 		Sburb.stage.translate(-Sburb.Stage.x,-Sburb.Stage.y);
 
-		Sburb.chooser.draw();
-
 		Sburb.stage.restore();
 		Sburb.Stage.offset = false;
 
@@ -659,21 +648,18 @@ Sburb.draw = function draw(){
 
 var _onkeydown = function(e){
     if(Sburb.updateLoop && !Sburb.inputDisabled) { // Make sure we are loaded before trying to do things
-	    if(Sburb.chooser.choosing){
-		Sburb.performAction(Sburb.chooser.choices[0]);
-		Sburb.chooser.choosing = false;
-	    }else if(Sburb.dialoger.talking && !Sburb.dialoger.choicePicking){
+	    if(Sburb.dialoger.talking && !Sburb.dialoger.choicePicking){
 		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space]){
 			    Sburb.dialoger.nudge();
 		    }
 	    }else if(hasControl()){
 		    if(e.keyCode == Sburb.Keys.space && !Sburb.pressed[Sburb.Keys.space] && Sburb.engineMode=="wander"){
-			    Sburb.chooser.choices = [];
+			    Sburb.choices = [];
 			    var queries = Sburb.char.getActionQueries();
 			    for(var i=0;i<queries.length;i++){
-				    Sburb.chooser.choices = Sburb.curRoom.queryActions(Sburb.char,queries[i].x,queries[i].y);
-				    if(Sburb.chooser.choices.length>0){
-				   	Sburb.performAction(Sburb.chooser.choices[0]);
+				    Sburb.choices = Sburb.curRoom.queryActions(Sburb.char,queries[i].x,queries[i].y);
+				    if(Sburb.choices.length>0){
+				   	Sburb.performAction(Sburb.choices[0]);
 					break;
 				    }
 			    }
@@ -790,7 +776,6 @@ function drawHud(){
 
 function hasControl(){
 	return !Sburb.dialoger.talking
-		&& !Sburb.chooser.choosing
 		&& !Sburb.destRoom
 		&& !Sburb.fading
 		&& !Sburb.destFocus;
@@ -839,11 +824,6 @@ function handleRoomChange(){
 		Sburb.Stage.fade=Math.max(0.01,Sburb.Stage.fade-Sburb.Stage.fadeRate);
 		//apparently alpha 0 is buggy?
 	}
-}
-
-function beginChoosing(){
-	Sburb.char.idle();
-	Sburb.chooser.beginChoosing(Sburb.char.x,Sburb.char.y);
 }
 
 function chainAction(){

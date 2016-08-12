@@ -138,8 +138,7 @@ commands.removeAction = commands.removeActions = function(info){
 //Sytax: SBURBML action tags
 commands.presentAction = commands.presentActions = function(info){
 	var actions = parseActionString(info);
-	Sburb.chooser.choices = actions;
-	Sburb.chooser.beginChoosing(Sburb.Stage.x+20,Sburb.Stage.y+50);
+	Sburb.choices = actions;
 	//Sburb.Stage is the true position of the view. Sburb.cam is simply the desired position
 }
 
@@ -430,7 +429,6 @@ commands.toggleVolume = function(){
 	}
 }
 
-
 //Create buttons with choices
 commands.choicePick = function(info){
 	//choice selection has to be the first item in the args tag
@@ -567,9 +565,7 @@ commands.saveOrLoad = function(info){
 	if(Sburb.tests.storage) {
 	    actions.push(new Sburb.Action("save","false,"+local,"Save"));
     }
-	actions.push(new Sburb.Action("cancel",null,"Cancel"));
-	Sburb.chooser.choices = actions;
-	Sburb.chooser.beginChoosing(Sburb.Stage.x+20,Sburb.Stage.y+50);
+	Sburb.choices = actions; //TODO automatically does the first action, i might just get rid of this button
 }
 
 //Change global game state
@@ -629,9 +625,7 @@ commands.openLink = function(info){
      var actions = [];
 
 	 actions.push(new Sburb.Action("openDirect", url + "," + text, "Go To "+text));
-	 actions.push(new Sburb.Action("cancel",null,"Cancel"));
-	 Sburb.chooser.choices = actions;
-	 Sburb.chooser.beginChoosing(Sburb.Stage.x+200,Sburb.Stage.y+250);
+	 Sburb.choices = actions;
 }
 
 commands.openDirect = function(info){

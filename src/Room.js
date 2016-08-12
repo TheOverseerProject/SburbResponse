@@ -99,15 +99,15 @@ Sburb.Room.prototype.removeMotionPath = function(path) {
 
 //perform any intialization
 Sburb.Room.prototype.enter = function(){
-	
+
 	if(this.walkableMap){
 		var mapCanvas = Sburb.Map;
-		
+
 		var drawWidth = mapCanvas.width = this.walkableMap.width;
 		var drawHeight = mapCanvas.height = this.walkableMap.height;
 		var ctx = mapCanvas.getContext("2d");
 		ctx.drawImage(this.walkableMap,0,0,drawWidth,drawHeight, 0,0,drawWidth,drawHeight);
-		
+
 		this.mapData = ctx.getImageData(0,0,drawWidth,drawHeight).data;
 		/*this.mapData = new Uint8Array(drawWidth*drawHeight);
 		for(var x=0;x<drawWidth;x+=this.blockSize){
@@ -117,7 +117,7 @@ Sburb.Room.prototype.enter = function(){
 				var data = ctx.getImageData(x,y,width,height).data;
 				for(var j=0;j<height;j++){
 					for(var i=0;i<width;i++){
-						
+
 						this.mapData[x+i+(y+j)*drawWidth] = data[(i+j*width)*4];
 					}
 				}
@@ -165,7 +165,7 @@ Sburb.Room.prototype.update = function(){
 //draw the room
 Sburb.Room.prototype.draw = function(){
 	this.sortDepths();
-	
+
 	for(var i=0;i<this.sprites.length;i++){
 		this.sprites[i].draw();
 	}
@@ -214,7 +214,7 @@ Sburb.Room.prototype.queryActionsVisual = function(query,x,y){
 
 //check if the sprite is in bounds
 Sburb.Room.prototype.isInBounds = function(sprite,dx,dy){
-	
+
 	var queries = sprite.getBoundaryQueries(dx,dy);
 	var result = this.isInBoundsBatch(queries);
 	for(var point in result){
@@ -255,7 +255,7 @@ Sburb.Room.prototype.isInBoundsBatch = function(queries,results){
 	for(var i=0;i<this.unwalkables.length;i++){
 		this.unwalkables[i].queryBatchNeg(queries,results);
 	}
-	
+
 	return results;
 }
 
@@ -289,7 +289,7 @@ Sburb.Room.prototype.getInverseMoveFunction = function(sprite){
                 return {x:0, y:0};
             }
         };
-    } 
+    }
 }
 
 Sburb.Room.prototype.getMotionPath = function(sprite){
@@ -347,7 +347,7 @@ Sburb.Room.prototype.serialize = function(output){
 	for(var i=0; i < this.sprites.length; i++){
 	    output = this.sprites[i].serialize(output);
 	}
-	
+
 	output = output.concat("\n</room>");
 	return output;
 }
@@ -367,27 +367,26 @@ Sburb.parseRoom = function(roomNode, assetFolder, spriteFolder) {
   	var newRoom = new Sburb.Room(attributes.getNamedItem("name").value,
   			       attributes.getNamedItem("width")?parseInt(attributes.getNamedItem("width").value):0,
   			       attributes.getNamedItem("height")?parseInt(attributes.getNamedItem("height").value):0);
-  	
+
   	var mapScale = attributes.getNamedItem("mapScale");
   	if(mapScale){
   		newRoom.mapScale = parseInt(mapScale.value);
   	}
-  	
+
   	var walkableMap = attributes.getNamedItem("walkableMap");
   	if(walkableMap){
   		newRoom.walkableMap = assetFolder[walkableMap.value];
   		if(!newRoom.width){
   			newRoom.width = newRoom.walkableMap.width*newRoom.mapScale;
   		}
-  		
+
   		if(!newRoom.height){
   			newRoom.height = newRoom.walkableMap.height*newRoom.mapScale;
   		}
   	}
-  	
+
   	Sburb.serialLoadRoomSprites(newRoom,roomNode.getElementsByTagName("sprite"), spriteFolder);
   	Sburb.serialLoadRoomSprites(newRoom,roomNode.getElementsByTagName("character"), spriteFolder);
-  	Sburb.serialLoadRoomSprites(newRoom,roomNode.getElementsByTagName("fighter"), spriteFolder);
   	var paths = roomNode.getElementsByTagName("paths");
   	if(paths.length>0){
 		Sburb.serialLoadRoomPaths(newRoom, paths, assetFolder);
