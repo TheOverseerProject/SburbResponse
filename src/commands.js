@@ -14,7 +14,7 @@ var commands = {};
 //syntax: dialog syntax
 commands.talk = function(info){
 	Sburb.dialoger.startDialog(info);
-}
+};
 
 //Pick a random line of dialog
 //syntax: dialog syntax
@@ -27,7 +27,7 @@ commands.randomTalk = function(info){
 	}else{
 		Sburb.dialoger.queue = [];
 	}
-}
+};
 
 //Change the room and move the character to a new location in that room
 //syntax: roomName, newCharacterX, newCharacterY
@@ -35,7 +35,7 @@ commands.changeRoom = function(info){
 	var params = parseParams(info);
 	Sburb.changeRoom(Sburb.rooms[params[0]],parseInt(params[1]),parseInt(params[2]));
     Sburb.loadingRoom = false; // We did it!
-}
+};
 
 //Change the focus of the camera
 //syntax: spriteName
@@ -47,7 +47,7 @@ commands.changeFocus = function(info){
 		var sprite = parseCharacterString(params[0]);
 		Sburb.destFocus = sprite;
 	}
-}
+};
 
 //Perform changeRoom, and also add teleport effects
 //syntax: see changeRoom
@@ -57,7 +57,7 @@ commands.teleport = function(info){
 	var params = parseParams(info);
 	Sburb.curAction.followUp = new Sburb.Action("playEffect","teleportEffect,"+params[1]+","+params[2],null,null,Sburb.curAction.followUp);
 	//playSound(new BGM(assets["teleportSound"],0));
-}
+};
 
 //Set a different Character as the player
 //syntax: newPlayerName
@@ -68,7 +68,7 @@ commands.changeChar = function(info){
 	Sburb.destFocus = Sburb.char = Sburb.sprites[info];
 	Sburb.char.becomePlayer();
 	Sburb.setCurRoomOf(Sburb.char);
-}
+};
 
 //Set the given song as the new background music
 //syntax: songName, loopingStartPoint (seconds)
@@ -76,28 +76,28 @@ commands.playSong = function(info){
 	var params = parseParams(info);
 
 	Sburb.changeBGM(new Sburb.BGM(Sburb.assets[params[0]],parseFloat(params[1])));
-}
+};
 
 commands.becomeNPC = function(info){
 	Sburb.char.becomeNPC();
-}
+};
 
 commands.becomePlayer = function(info){
 	Sburb.char.becomePlayer();
-}
+};
 
 //Play the given sound
 //syntax: soundName
 commands.playSound = function(info){
 	Sburb.playSound(new Sburb.Sound(Sburb.assets[info.trim()]));
-}
+};
 
 //Play the given effect and the given location
 //syntax: effectName, x, y
 commands.playEffect = function(info){
 	var params = parseParams(info);
 	Sburb.playEffect(Sburb.effects[params[0]],parseInt(params[1]),parseInt(params[2]));
-}
+};
 
 //Have the specified sprite play the specified animation
 //syntax: spriteName, animationName
@@ -106,7 +106,7 @@ commands.playAnimation = commands.startAnimation = function(info){
 	var sprite = parseCharacterString(params[0]);
 
 	sprite.startAnimation(params[1]);
-}
+};
 
 //Add actions to a sprite
 //Syntax: spriteName, SBURBML action tags
@@ -122,7 +122,7 @@ commands.addAction = commands.addActions = function(info){
 		var action = actions[i];
 		sprite.addAction(action);
 	}
-}
+};
 
 //Remove an action from a sprite
 //Syntax: spriteName, actionName
@@ -132,7 +132,7 @@ commands.removeAction = commands.removeActions = function(info){
 	for(var i=1;i<params.length;i++){
 		sprite.removeAction(params[i]);
 	}
-}
+};
 
 //Present player with following actions to choose from
 //Sytax: SBURBML action tags
@@ -140,7 +140,7 @@ commands.presentAction = commands.presentActions = function(info){
 	var actions = parseActionString(info);
 	Sburb.choices = actions;
 	//Sburb.Stage is the true position of the view. Sburb.cam is simply the desired position
-}
+};
 
 
 //Open the specified chest, revealing the specified item, and with the specified text
@@ -175,7 +175,7 @@ commands.openChest = function(info){
 	lastAction = lastAction.followUp = new Sburb.Action("removeSprite",item.name+","+Sburb.curRoom.name);
 	lastAction.followUp = Sburb.curAction.followUp;
 	Sburb.performAction(newAction);
-}
+};
 
 //Move the specified sprite by the specified amount
 //syntax: spriteName, dx, dy
@@ -191,7 +191,7 @@ commands.deltaSprite = function(info){
 	var dy = parseInt(params[2]);
 	sprite.x+=dx;
 	sprite.y+=dy;
-}
+};
 
 //Move the specified sprite to the specified location
 //syntax: spriteName, x, y
@@ -202,7 +202,7 @@ commands.moveSprite = function(info){
 	var newY = parseInt(params[2]);
 	sprite.x = newX;
 	sprite.y = newY;
-}
+};
 
 //Move the specified sprite to the specified depth
 //syntax: spriteName, depth
@@ -211,7 +211,7 @@ commands.depthSprite = function(info){
 	var sprite = parseCharacterString(params[0]);
 	var depth = parseInt(params[1]);
 	sprite.depthing = depth;
-}
+};
 
 
 //Play the specified flash movie
@@ -219,7 +219,7 @@ commands.depthSprite = function(info){
 commands.playMovie = function(info){
 	var params = parseParams(info);
 	Sburb.playMovie(Sburb.assets[params[0]]);
-}
+};
 
 //Remove the specified flash movie
 //syntax: movieName
@@ -229,19 +229,19 @@ commands.removeMovie = function(info){
 	document.getElementById(info).style.display = "none";
 	//document.getElementById("gameDiv").style.display = "block";
 
-}
+};
 
 //Prevents user from providing input to the character
 //syntax: none
 commands.disableControl = function(info){
 	Sburb.inputDisabled = info.trim().length>0 ? new Sburb.Trigger(info) : true;
-}
+};
 
 //Undoes disableControl
 //syntax: none
 commands.enableControl = function(info){
 	Sburb.inputDisabled = false;
-}
+};
 
 //DEPRECATED; DO NOT USE
 //Block user input and main-queue progression until the specified Event
@@ -249,7 +249,7 @@ commands.enableControl = function(info){
 commands.waitFor = function(info){
 	commands.disableControl(info);
 	return commands.sleep(info);
-}
+};
 
 //Execute an action and wait for all followUps to finish
 //syntax: SBURBML action tag
@@ -263,13 +263,13 @@ commands.macro = function(info){
 	if(newQueue) {
 		return new Sburb.Trigger("noActions,"+newQueue.id);
 	}
-}
+};
 
 //Wait for the specified event before continuing the current queue
 //syntax: Event syntax
 commands.sleep = function(info){
 	return new Sburb.Trigger(info);
-}
+};
 
 //Pauses an actionQueue, it can be resumed with resumeActionQueue
 //syntax: Id of actionQueue or list of Ids
@@ -281,7 +281,7 @@ commands.pauseActionQueue = commands.pauseActionQueues = function(info){
 			queue.paused = true;
 		}
 	}
-}
+};
 
 //Resumes an previously paused actionQueue
 //syntax: Id of actionQueue or list of Ids
@@ -293,7 +293,7 @@ commands.resumeActionQueue = commands.resumeActionQueues = function(info){
 			queue.paused = false;
 		}
 	}
-}
+};
 
 //Cancels an actionQueue
 //syntax: Id of actionQueue or list of Ids
@@ -302,7 +302,7 @@ commands.cancelActionQueue = commands.cancelActionQueues = function(info){
 	for(var i=0;i<params.length;i++) {
 		Sburb.removeActionQueueById(params[i]);
 	}
-}
+};
 
 //Pauses a group of actionQueues, they can be resumed with resumeActionQueueGroup
 //syntax: group name or list of group names
@@ -313,7 +313,7 @@ commands.pauseActionQueueGroup = commands.pauseActionQueueGroups = function(info
 			queue.paused = true;
 		});
 	}
-}
+};
 
 //Resumes a previously paused group of actionQueues
 //syntax: group name or list of group names
@@ -324,7 +324,7 @@ commands.resumeActionQueueGroup = commands.resumeActionQueueGroups = function(in
 			queue.paused = false;
 		});
 	}
-}
+};
 
 //Cancels a group of actionQueues
 //syntax: group name or list of group names
@@ -333,7 +333,7 @@ commands.cancelActionQueueGroup = commands.cancelActionQueueGroups = function(in
 	for(var i=0;i<params.length;i++) {
 		Sburb.removeActionQueuesByGroup(params[i]);
 	}
-}
+};
 
 //Add the specified sprite to the specified room
 //syntax: spriteName, roomName
@@ -343,7 +343,7 @@ commands.addSprite = function(info){
 	var room = Sburb.rooms[params[1]];
 
 	room.addSprite(sprite);
-}
+};
 
 //Remove the specified sprite from the specified room
 //syntax: spriteName, roomName
@@ -352,7 +352,7 @@ commands.removeSprite = function(info){
 	var sprite = Sburb.sprites[params[0]];
 	var room = Sburb.rooms[params[1]];
 	room.removeSprite(sprite);
-}
+};
 
 //Clone the specified sprite with a new name
 //syntax: spriteName, newName
@@ -361,7 +361,7 @@ commands.cloneSprite = function(info){
 	var sprite = parseCharacterString(params[0]);
 	var newName = params[1];
 	sprite.clone(newName);
-}
+};
 
 //Add the specified path as a walkable to the specified room
 //syntax: pathName, roomName
@@ -370,7 +370,7 @@ commands.addWalkable = function(info){
 	var path = Sburb.assets[params[0]];
 	var room = Sburb.rooms[params[1]];
 	room.addWalkable(path);
-}
+};
 
 //Add the specified path as an unwalkable to the specified room
 //syntax: pathName, roomName
@@ -379,7 +379,7 @@ commands.addUnwalkable = function(info){
 	var path = Sburb.assets[params[0]];
 	var room = Sburb.rooms[params[1]];
 	room.addUnwalkable(path);
-}
+};
 
 //Add the specified path as a motionpath to the specified room
 //syntax: pathName, xtox, xtoy, ytox, ytoy, dx, dy, roomName
@@ -391,7 +391,7 @@ commands.addMotionPath = function(info){
 		parseFloat(params[1]),parseFloat(params[2]),
 		parseFloat(params[3]),parseFloat(params[4]),
 		parseFloat(params[5]),parseFloat(params[6]));
-}
+};
 
 //Remove the specified walkable from the specified room
 //syntax: pathName, roomName
@@ -400,7 +400,7 @@ commands.removeWalkable = function(info){
 	var path = Sburb.assets[params[0]];
 	var room = Sburb.rooms[params[1]];
 	room.removeWalkable(path);
-}
+};
 
 //Remove the specified unwalkable from the specified room
 //syntax: pathName, roomName
@@ -409,7 +409,7 @@ commands.removeUnwalkable = function(info){
 	var path = Sburb.assets[params[0]];
 	var room = Sburb.rooms[params[1]];
 	room.removeUnwalkable(path);
-}
+};
 
 
 //Toggle the volume
@@ -427,20 +427,20 @@ commands.toggleVolume = function(){
 	if(Sburb.bgm){
 		Sburb.bgm.fixVolume();
 	}
-}
+};
 
 //Create buttons with choices
 commands.choicePick = function(info){
 	//choice selection has to be the first item in the args tag
 	var buttonPull = info.split(",");
 	Sburb.password=buttonPull[0];
-}
+};
 
 //change the engine mode
 //syntax: modeName
 commands.changeMode = function(info){
 	Sburb.engineMode = info.trim();
-}
+};
 
 //load in an additional SBURBML file
 //syntax: path, keepOld
@@ -449,18 +449,19 @@ commands.loadStateFile = function(info){
 	var path = params[0];
 	var keepOld = params[1]=="true";
 	Sburb.loadSerialFromXML(path,keepOld);
-}
+};
 
 //fade out to black
 //syntax: none
 commands.fadeOut = function(info){
 	Sburb.fading = true;
-}
+};
 
 //go to a room that may not have been loaded yet
 //syntax: filepath, roomName, newCharacterX, newCharacterY
 commands.changeRoomRemote = function(info){
-    if(Sburb.loadingRoom) return; Sburb.loadingRoom = true; //Only load one room at a time
+    if(Sburb.loadingRoom){ return; }
+    Sburb.loadingRoom = true; //Only load one room at a time
 	var params = parseParams(info);
 	var lastAction;
 	var newAction = lastAction = new Sburb.Action("fadeOut");
@@ -468,19 +469,20 @@ commands.changeRoomRemote = function(info){
 	lastAction = lastAction.followUp = new Sburb.Action("changeRoom",params[1]+","+params[2]+","+params[3]);
 	lastAction.followUp = Sburb.curAction.followUp;
 	Sburb.performAction(newAction);
-}
+};
 
 //Teleport to a room which may not have been loaded yet
 //syntax: filepath, roomName, newCharacterX, newCharacterY
 commands.teleportRemote = function(info){
-    if(Sburb.loadingRoom) return; Sburb.loadingRoom = true; //Only load one room at a time
+    if(Sburb.loadingRoom){ return; }
+    Sburb.loadingRoom = true; //Only load one room at a time
 	commands.changeRoomRemote(info);
 
 	Sburb.playEffect(Sburb.effects["teleportEffect"],Sburb.char.x,Sburb.char.y);
 
 	var params = parseParams(info);
 	Sburb.curAction.followUp.followUp.followUp = new Sburb.Action("playEffect","teleportEffect,"+params[2]+","+params[3],null,null,Sburb.curAction.followUp.followUp.followUp);
-}
+};
 
 
 //Change the state of the specified button
@@ -488,13 +490,13 @@ commands.teleportRemote = function(info){
 commands.setButtonState = function(info){
 	var params = parseParams(info);
 	Sburb.buttons[params[0]].setState(params[1]);
-}
+};
 
 //Skip the current conversation
 //syntax: none
 commands.skipDialog = function(info){
 	Sburb.dialoger.skipAll();
-}
+};
 
 //Set a character to follow another sprite
 //syntax: followerName, leaderName
@@ -503,7 +505,7 @@ commands.follow = function(info){
 	var follower = parseCharacterString(params[0]);
 	var leader = parseCharacterString(params[1]);
 	follower.follow(leader);
-}
+};
 
 //Set a character to stop following another sprite
 //syntax: followerName
@@ -511,7 +513,7 @@ commands.unfollow = function(info){
 	var params = parseParams(info);
 	var follower = parseCharacterString(params[0]);
 	follower.unfollow();
-}
+};
 
 //Overlay a sprite over the game area (below the HUD)
 //syntax: spriteName
@@ -521,7 +523,7 @@ commands.addOverlay = function(info){
 	sprite.x = Sburb.Stage.x;
 	sprite.y = Sburb.Stage.y;
 	Sburb.curRoom.addSprite(sprite);
-}
+};
 
 //Remove an overlay
 //syntax: spriteName
@@ -529,7 +531,7 @@ commands.removeOverlay = function(info){
 	var params = parseParams(info);
 	var sprite = Sburb.sprites[params[0]];
 	Sburb.curRoom.removeSprite(sprite);
-}
+};
 
 //Save state to client storage
 //syntax: isAuto, useLocal
@@ -538,7 +540,7 @@ commands.save = function(info){
 	var auto = params.length>0 && params[0]=="true";
 	var local = params.length>1 && params[1]=="true";
 	Sburb.saveStateToStorage(Sburb.char.name+", "+Sburb.curRoom.name,auto,local);
-}
+};
 
 //Load state from client storage
 //syntax: isAuto, useLocal
@@ -548,7 +550,7 @@ commands.load = function(info){
 	var local = params.length>1 && params[1]=="true";
 	Sburb.loadStateFromStorage(auto, local);
 //	Sburb.saveStateToStorage(Sburb.char.name+", "+Sburb.curRoom.name,auto,local);
-}
+};
 
 //Display save/load options
 //syntax: useLocal
@@ -566,7 +568,7 @@ commands.saveOrLoad = function(info){
 	    actions.push(new Sburb.Action("save","false,"+local,"Save"));
     }
 	Sburb.choices = actions; //TODO automatically does the first action, i might just get rid of this button
-}
+};
 
 //Change global game state
 //syntax: gameState, value
@@ -575,7 +577,7 @@ commands.setGameState = function(info) {
 	// TODO: there should be a check to make sure the gameState key
 	// doesn't contain &, <, or >
 	Sburb.gameState[params[0]] = params[1];
-}
+};
 
 //Move the character backwards
 //syntax: charName
@@ -584,7 +586,7 @@ commands.goBack = function(info){
 	var character = parseCharacterString(params[0]);
 	character.x = character.oldX;
 	character.y = character.oldY;
-}
+};
 //tryToTrigger the given triggers in order, if one succeeds, don't do the rest (they are like an else-if chain)
 //syntax: Sburbml trigger syntax
 commands.try = function(info){
@@ -596,7 +598,7 @@ commands.try = function(info){
 			return;
 		}
 	}
-}
+};
 
 
 //make the character walk in the specified direction (Up, Down, Left, Right, None)
@@ -608,7 +610,7 @@ commands.walk = function(info){
 	if(typeof character["move"+dir] == "function"){
 		character["move"+dir]();
 	}
-}
+};
 
 //opens an external link in a new tab
 //syntax url, displayText
@@ -626,7 +628,7 @@ commands.openLink = function(info){
 
 	 actions.push(new Sburb.Action("openDirect", url + "," + text, "Go To "+text));
 	 Sburb.choices = actions;
-}
+};
 
 commands.openDirect = function(info){
     var params = parseParams(info);
@@ -634,14 +636,14 @@ commands.openDirect = function(info){
     var text = params[1];
 
     window.open(url, text, "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes");
-}
+};
 
 
 //blank utlity function
 //syntax: none
 commands.cancel = function(){
 	//do nothing
-}
+};
 
 
 
@@ -652,7 +654,7 @@ var parseCharacterString = Sburb.parseCharacterString = function(string){
 	}else{
 		return Sburb.sprites[string];
 	}
-}
+};
 
 
 function parseActionString(string){

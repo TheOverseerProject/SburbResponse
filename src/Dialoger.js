@@ -37,7 +37,7 @@ Sburb.Dialoger = function(hiddenPos, alertPos, talkPosLeft, talkPosRight,
 	this.leftTextDimensions = leftTextDimensions;
 	this.rightTextDimensions = rightTextDimensions;
 
-	this.pos = {x:hiddenPos.x,y:hiddenPos.y}
+	this.pos = {x:hiddenPos.x,y:hiddenPos.y};
 
 	this.actor = null;
 	this.dialogSide = "Left";
@@ -48,10 +48,9 @@ Sburb.Dialoger = function(hiddenPos, alertPos, talkPosLeft, talkPosRight,
 	this.type = type;
 	this.inPosition = false;
 
-	//TODO make this better
 	this.choice1 = "choice1";
 	this.choice2 = "choice2";
-}
+};
 
 Sburb.Dialoger.prototype.dialogSpriteLeft = null;
 Sburb.Dialoger.prototype.dialogSpriteRight = null;
@@ -73,11 +72,11 @@ Sburb.Dialoger.prototype.nudge = function(){
 			this.dialog.showAll();
 		}
 	}
-}
+};
 
 Sburb.Dialoger.prototype.skipAll = function(){
 	this.talking = false;
-}
+};
 
 //start the provided dialog
 Sburb.Dialoger.prototype.startDialog = function(info){
@@ -85,7 +84,7 @@ Sburb.Dialoger.prototype.startDialog = function(info){
 	this.actor = null;
 	this.currentDialog = info;
 	this.queue = info.split("@");
-	for(var i=this.queue.length-2;i>=0;i--){
+	for(var i = this.queue.length-2;i>=0;i--){
 		var line = this.queue[i];
 		var escapeCount = 0;
 		var index = line.length-1;
@@ -106,7 +105,7 @@ Sburb.Dialoger.prototype.startDialog = function(info){
 	this.box.x=-this.box.width;
 	this.talking = true;
 
-}
+};
 
 //start the next dialog
 Sburb.Dialoger.prototype.nextDialog = function(){
@@ -115,18 +114,20 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 	this.dialog.setText(nextDialog);
 	this.dialog.showSubText(0,0);
 	var prefix = nextDialog.split(" ",1)[0];
+	//If statement variables
+	var firstIndex, lastIndex, ampIndex, colIndex, resource;
 	if(prefix.indexOf("~")>=0){
-		var firstIndex = prefix.indexOf("~");
-		var lastIndex = prefix.length;
-		var ampIndex = prefix.indexOf("%");
+		firstIndex = prefix.indexOf("~");
+		lastIndex = prefix.length;
+		ampIndex = prefix.indexOf("%");
 		if(ampIndex>firstIndex){
 			lastIndex = ampIndex;
 		}
-		var colIndex = prefix.indexOf(":");
+		colIndex = prefix.indexOf(":");
 		if(colIndex>=0 && colIndex<lastIndex){
 			lastIndex = colIndex;
 		}
-		var resource = prefix.substring(firstIndex+1,lastIndex);
+		resource = prefix.substring(firstIndex+1,lastIndex);
 		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
 		this.graphic = Sburb.sprites[resource];
 		//for an in-dialog choice
@@ -143,14 +144,14 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 	}
 
 	if(prefix.indexOf("%")>=0){
-		var firstIndex = prefix.indexOf("%");
-		var lastIndex = prefix.length;
+		firstIndex = prefix.indexOf("%");
+		lastIndex = prefix.length;
 
-		var colIndex = prefix.indexOf(":");
+		colIndex = prefix.indexOf(":");
 		if(colIndex>=0 && colIndex<lastIndex){
 			lastIndex = colIndex;
 		}
-		var resource = prefix.substring(firstIndex+1,lastIndex);
+		resource = prefix.substring(firstIndex+1,lastIndex);
 		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
 
 		this.setBox(resource);
@@ -159,10 +160,10 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 	}
 
 	if(prefix.indexOf(":")>=0){
-		var firstIndex = prefix.indexOf(":");
-		var lastIndex = prefix.length;
+		firstIndex = prefix.indexOf(":");
+		lastIndex = prefix.length;
 
-		var resource = prefix.substring(firstIndex+1,lastIndex);
+		resource = prefix.substring(firstIndex+1,lastIndex);
 		prefix = prefix.substring(0,firstIndex)+prefix.substring(lastIndex,prefix.length);
 
 		this.extraArgs = resource;
@@ -175,7 +176,7 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 		this.actor = null;
 		this.dialogSide = "Left";
 	}else{
-		var newActor;
+		var newActor, sprite, desiredPos;
 		if(prefix.indexOf("_")>=0){
 			newActor = prefix.substring(0,prefix.indexOf("_"));
 		}else{
@@ -183,14 +184,14 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 		}
 		if(this.actor==null){
 			this.dialogSide = "Left";
-			var sprite = this.dialogOnSide(this.dialogSide);
-			var desiredPos = this.startOnSide(this.oppositeSide(this.dialogSide));
+			sprite = this.dialogOnSide(this.dialogSide);
+			desiredPos = this.startOnSide(this.oppositeSide(this.dialogSide));
 			sprite.x = desiredPos.x;
 			sprite.y = desiredPos.y;
 		}else if(this.actor!=newActor){
 			this.dialogSide = this.oppositeSide(this.dialogSide);
-			var sprite = this.dialogOnSide(this.dialogSide)
-			var desiredPos = this.startOnSide(this.dialogSide);
+			sprite = this.dialogOnSide(this.dialogSide);
+			desiredPos = this.startOnSide(this.dialogSide);
 			sprite.x = desiredPos.x;
 			sprite.y = desiredPos.y;
 
@@ -199,7 +200,7 @@ Sburb.Dialoger.prototype.nextDialog = function(){
 		this.dialogOnSide(this.dialogSide).startAnimation(prefix);
 	}
 
-}
+};
 
 //get the string suffix for the opposite side to that is currently talking
 Sburb.Dialoger.prototype.oppositeSide = function(side){
@@ -208,22 +209,22 @@ Sburb.Dialoger.prototype.oppositeSide = function(side){
 	}else{
 		return "Left";
 	}
-}
+};
 
 //get the dialogSprite on the specified side
 Sburb.Dialoger.prototype.dialogOnSide = function(side){
 	return this["dialogSprite"+side];
-}
+};
 
 //get the start position of a dialog on the specified side
 Sburb.Dialoger.prototype.startOnSide = function(side){
 	return this["spriteStart"+side];
-}
+};
 
 //get the end position of a dialog on the specified side
 Sburb.Dialoger.prototype.endOnSide = function(side){
 	return this["spriteEnd"+side];
-}
+};
 
 //move the specified sprite towards the specified location at the specified speed
 Sburb.Dialoger.prototype.moveToward = function(sprite,pos,speed){
@@ -246,7 +247,7 @@ Sburb.Dialoger.prototype.moveToward = function(sprite,pos,speed){
 		sprite.y = pos.y;
 	}
 	return sprite.y == pos.y && sprite.x == pos.x;
-}
+};
 
 //update the Dialoger one frame
 Sburb.Dialoger.prototype.update = function(){
@@ -285,9 +286,6 @@ Sburb.Dialoger.prototype.update = function(){
 		}
 
 		if(this.choicePicking){
-			//TODO sort of sloppy but does the job for what I need.
-			//more robust things to do here would include more than 2 choices
-			//or being able to rehash the choice more than once (currently will only activate one time)
 			Sburb.hud[this.choice1].moveToward(Sburb.hud[this.choice1],120);
 			Sburb.hud[this.choice2].moveToward(Sburb.hud[this.choice2],120);
 			this.moveToward(this.pos,this.hiddenPos,240);
@@ -321,7 +319,7 @@ Sburb.Dialoger.prototype.update = function(){
 	this.box.y = this.pos.y;
 
 	this.box.update();
-}
+};
 
 //get what the dimensions of the dialog should be
 Sburb.Dialoger.prototype.decideDialogDimensions = function(){
@@ -341,7 +339,7 @@ Sburb.Dialoger.prototype.decideDialogDimensions = function(){
 				width:this.rightTextDimensions.width,
 				height:this.rightTextDimensions.height};
 	}
-}
+};
 
 //set the dialog box graphic
 Sburb.Dialoger.prototype.setBox = function(box){
@@ -360,7 +358,7 @@ Sburb.Dialoger.prototype.setBox = function(box){
 		dialogBox.y = this.box.y;
 	}
 	this.box = dialogBox;
-}
+};
 
 //draw the dialog box
 Sburb.Dialoger.prototype.draw = function(){
@@ -378,7 +376,7 @@ Sburb.Dialoger.prototype.draw = function(){
 		}
 		this.dialogSpriteRight.draw();
 	}
-}
+};
 
 Sburb.parseDialoger = function(dialoger){
 	var attributes = dialoger.attributes;
@@ -405,7 +403,7 @@ Sburb.parseDialoger = function(dialoger){
 
   	return newDialoger;
 
-}
+};
 
 Sburb.Dialoger.prototype.serialize = function(input){
 	input+="\n<dialoger "+ serializeDimensions(this,"hiddenPos", "alertPos", "talkPosLeft", "talkPosRight",
@@ -416,7 +414,7 @@ Sburb.Dialoger.prototype.serialize = function(input){
 	input+=">";
 	input+="</dialoger>";
 	return input;
-}
+};
 
 function serializeDimensions(base){
 	str = "";

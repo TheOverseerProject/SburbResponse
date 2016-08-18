@@ -21,7 +21,7 @@ Sburb.Room = function(name,width,height){
 	this.triggers = [];
 	this.walkableMap = null;
 	this.mapScale = 4;
-}
+};
 
 Sburb.Room.prototype.mapData = null;
 Sburb.Room.prototype.blockSize = 500;
@@ -29,19 +29,19 @@ Sburb.Room.prototype.blockSize = 500;
 //add an Effect to the room
 Sburb.Room.prototype.addEffect = function(effect){
 	this.effects.push(effect);
-}
+};
 
 //add a Trigger to the room
 Sburb.Room.prototype.addTrigger = function(trigger){
 	this.triggers.push(trigger);
-}
+};
 
 //add a Sprite to the room
 Sburb.Room.prototype.addSprite = function(sprite){
 	if(!this.contains(sprite)){
 		this.sprites.push(sprite);
 	}
-}
+};
 
 //remove a Sprite from the room
 Sburb.Room.prototype.removeSprite = function(sprite){
@@ -53,17 +53,17 @@ Sburb.Room.prototype.removeSprite = function(sprite){
 		}
 	}
 	return false;
-}
+};
 
 //add a walkable to the room
 Sburb.Room.prototype.addWalkable = function(path){
 	this.walkables.push(path);
-}
+};
 
 //add an unwalkable to the room
 Sburb.Room.prototype.addUnwalkable = function(path){
 	this.unwalkables.push(path);
-}
+};
 
 //add a motionPath to the room
 Sburb.Room.prototype.addMotionPath = function(path,xtox,xtoy,ytox,ytoy,dx,dy) {
@@ -74,17 +74,17 @@ Sburb.Room.prototype.addMotionPath = function(path,xtox,xtoy,ytox,ytoy,dx,dy) {
 		this.dx = dx; this.dy = dy;
 	};
 	this.motionPaths.push(motionPath);
-}
+};
 
 //remove a walkable from the room
 Sburb.Room.prototype.removeWalkable = function(path){
 	this.walkables.splice(this.walkables.indexOf(path),1);
-}
+};
 
 //remove an unwalkable to the room
 Sburb.Room.prototype.removeUnwalkable = function(path){
 	this.unwalkables.splice(this.unwalkables.indexOf(path),1);
-}
+};
 
 //remove a motionPath from the room
 Sburb.Room.prototype.removeMotionPath = function(path) {
@@ -95,7 +95,7 @@ Sburb.Room.prototype.removeMotionPath = function(path) {
 			return;
 		}
 	}
-}
+};
 
 //perform any intialization
 Sburb.Room.prototype.enter = function(){
@@ -124,13 +124,13 @@ Sburb.Room.prototype.enter = function(){
 			}
 		}*/
 	}
-}
+};
 
 //perform any exit activities necessary
 Sburb.Room.prototype.exit = function(){
 	this.effects = [];
 	this.mapData = null;
-}
+};
 
 //check if the room contains the sprite
 Sburb.Room.prototype.contains = function(sprite){
@@ -140,7 +140,7 @@ Sburb.Room.prototype.contains = function(sprite){
 		}
 	}
 	return false;
-}
+};
 
 //update the room one frame
 Sburb.Room.prototype.update = function(){
@@ -160,19 +160,19 @@ Sburb.Room.prototype.update = function(){
 			this.triggers.splice(i,1);
 		}
 	}
-}
+};
 
 //draw the room
 Sburb.Room.prototype.draw = function(){
 	this.sortDepths();
-
-	for(var i=0;i<this.sprites.length;i++){
+	var i=0;
+	for(i=0;i<this.sprites.length;i++){
 		this.sprites[i].draw();
 	}
 	for(i=0;i<this.effects.length;i++){
 		this.effects[i].draw(0,0);
 	}
-}
+};
 
 //sort the sprites by depth
 Sburb.Room.prototype.sortDepths = function(){
@@ -186,7 +186,7 @@ Sburb.Room.prototype.sortDepths = function(){
 		}
 		this.sprites[j] = temp;
 	}
-}
+};
 
 //query the room for an action based on actual collisions
 Sburb.Room.prototype.queryActions = function(query,x,y){
@@ -198,7 +198,7 @@ Sburb.Room.prototype.queryActions = function(query,x,y){
 		}
 	}
 	return validActions;
-}
+};
 
 //query the room for an action based on visual collisions
 Sburb.Room.prototype.queryActionsVisual = function(query,x,y){
@@ -210,7 +210,7 @@ Sburb.Room.prototype.queryActionsVisual = function(query,x,y){
 		}
 	}
 	return validActions;
-}
+};
 
 //check if the sprite is in bounds
 Sburb.Room.prototype.isInBounds = function(sprite,dx,dy){
@@ -223,7 +223,7 @@ Sburb.Room.prototype.isInBounds = function(sprite,dx,dy){
 		}
 	}
 	return true;
-}
+};
 
 //check if a series of points are in bounds
 Sburb.Room.prototype.isInBoundsBatch = function(queries,results){
@@ -270,7 +270,7 @@ Sburb.Room.prototype.getMoveFunction = function(sprite) {
 			return {x:fx,y:fy};
 		};
     }
-}
+};
 
 Sburb.Room.prototype.getInverseMoveFunction = function(sprite){
    var motionPath = this.getMotionPath(sprite);
@@ -290,7 +290,7 @@ Sburb.Room.prototype.getInverseMoveFunction = function(sprite){
             }
         };
     }
-}
+};
 
 Sburb.Room.prototype.getMotionPath = function(sprite){
     for(i=0; i<this.motionPaths.length; i++) {
@@ -300,7 +300,7 @@ Sburb.Room.prototype.getMotionPath = function(sprite){
         }
     }
     return null;
-}
+};
 
 //check if a sprite collides with anything
 Sburb.Room.prototype.collides = function(sprite,dx,dy){
@@ -313,7 +313,7 @@ Sburb.Room.prototype.collides = function(sprite,dx,dy){
 		}
 	}
 	return null;
-}
+};
 
 //serialize the room to XML
 Sburb.Room.prototype.serialize = function(output){
@@ -350,7 +350,7 @@ Sburb.Room.prototype.serialize = function(output){
 
 	output = output.concat("\n</room>");
 	return output;
-}
+};
 
 
 
@@ -396,7 +396,7 @@ Sburb.parseRoom = function(roomNode, assetFolder, spriteFolder) {
 		Sburb.serialLoadRoomTriggers(newRoom,triggers,spriteFolder);
 	}
 	return newRoom;
-}
+};
 
 
 

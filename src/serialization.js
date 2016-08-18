@@ -26,7 +26,7 @@ Sburb.serialize = function(sburbInst) {
 
 	for(var key in Sburb.loadedFiles) // Not sburbInst.loadedFiles ?
 	{
-	    if(!Sburb.loadedFiles.hasOwnProperty(key)) continue;
+	    if(!Sburb.loadedFiles.hasOwnProperty(key)){ continue; }
 	    loadedFiles = loadedFiles + (loadedFilesExist?",":"") + key;
 	    loadedFilesExist = true;
 	}
@@ -55,7 +55,7 @@ Sburb.serialize = function(sburbInst) {
 		out.value = output;
 	}
 	return output;
-}
+};
 
 ///
 // Saves state to session or local storage if supported by browser
@@ -95,7 +95,7 @@ Sburb.saveStateToStorage = function(description, auto, local)
 	storage.setItem(saveStateName, compressed);
 
 	return true;
-}
+};
 
 ///
 // Loads state from session or local storage if supported by browser
@@ -129,17 +129,13 @@ Sburb.loadStateFromStorage = function(auto, local)
 
 	for(var key in storage)
 	{
-	    if(!storage.hasOwnProperty(key)) continue;
+	    if(!storage.hasOwnProperty(key)){ continue; }
 		var savedIndex = key.indexOf('_savedState_');
-		if(savedIndex >= 0) // this key is a saved state
-		{
-			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
-			{
+		if(savedIndex >= 0){  // this key is a saved state
+			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex) {
 				saveStateName = key;
 				break;
-			}
-			else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
-			{
+			} else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				saveStateName = key;
 				break;
 			}
@@ -155,7 +151,7 @@ Sburb.loadStateFromStorage = function(auto, local)
 	Sburb.loadSerial(decoded);
 
 	return true;
-}
+};
 ///
 // Gets the descriptive name of the currently saved state
 // Paramters:
@@ -184,20 +180,20 @@ Sburb.getStateDescription = function(auto, local)
 
 	for(var key in storage)
 	{
-	    if(!storage.hasOwnProperty(key)) continue;
+	    if(!storage.hasOwnProperty(key)){ continue; }
 		var savedIndex = key.indexOf('_savedState_');
-		if(savedIndex >= 0) // this key is a saved state
-		{
-			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+		if(savedIndex >= 0) { // this key is a saved state
+			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				return key.substring(0, savedIndex);
-			else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+			}else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				return key.substring(0, savedIndex);
+			}
 		}
 
 	}
 
 	return null;
-}
+};
 
 ///
 // Deletes state from session or local storage if supported by browser
@@ -225,21 +221,20 @@ Sburb.deleteStateFromStorage = function(auto, local)
     }
 
 	Sburb.deleteOldVersionStates(local);
-	for(var key in storage)
-	{
-	    if(!storage.hasOwnProperty(key)) continue;
+	for(var key in storage){
+	    if(!storage.hasOwnProperty(key)){ continue; }
 		var savedIndex = key.indexOf('_savedState_');
-		if(savedIndex >= 0) // this key is a saved state
-		{
-			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+		if(savedIndex >= 0){ // this key is a saved state
+			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				storage.removeItem(key);
-			else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+			}else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				storage.removeItem(key);
+			}
 		}
 
 	}
 
-}
+};
 ///
 // Deletes any old states from previous versions of the game
 // Paramters:
@@ -263,19 +258,18 @@ Sburb.deleteOldVersionStates = function(local)
         return;
     }
 
-	for(var key in storage)
-	{
-	    if(!storage.hasOwnProperty(key)) continue;
+	for(var key in storage){
+	    if(!storage.hasOwnProperty(key)){ continue; }
 		var savedIndex = key.indexOf('_savedState_');
-		if(savedIndex >= 0) // this key is a saved state
-		{
+		if(savedIndex >= 0){ // this key is a saved state
 			// This is a key for our game, but not of the right version
-			if(key.indexOf(Sburb.name + ":") >= savedIndex && key.indexOf(":" + Sburb.version) < 0)
+			if(key.indexOf(Sburb.name + ":") >= savedIndex && key.indexOf(":" + Sburb.version) < 0){
 				storage.removeItem(key);
+			}
 		}
 
 	}
-}
+};
 
 ///
 // Checks if state is in session of local storage
@@ -305,37 +299,37 @@ Sburb.isStateInStorage = function(auto, local)
 
 	for(var key in storage)
 	{
-	    if(!storage.hasOwnProperty(key)) continue;
+	    if(!storage.hasOwnProperty(key)){ continue; }
 		var savedIndex = key.indexOf('_savedState_');
-		if(savedIndex >= 0) // this key is a saved state
-		{
-			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+		if(savedIndex >= 0){
+			if(auto && key.indexOf("(auto)") >= 0 && key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				return true;
-			else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex)
+			} else if(!auto && key.indexOf("(auto)") < 0 &&  key.indexOf(Sburb.name + ":" + Sburb.version) >= savedIndex){
 				return true;
+			}
 		}
 
 	}
 
 	return false;
-}
+};
 
 function encodeXML(s) {
 	return s.replace(/&/g, '&amp;')
 	.replace(/</g, '&lt;')
 	.replace(/>/g, '&gt;')
 	.replace(/"/g, '&quot;');
-};
+}
 
 //Serialize things that aren't actually in any room
 function serializeLooseObjects(output,rooms,sprites){
 
 	for(var sprite in sprites){
-	    if(!sprites.hasOwnProperty(sprite)) continue;
+	    if(!sprites.hasOwnProperty(sprite)){ continue; }
 		var theSprite = sprites[sprite];
 		var contained = false;
 		for(var room in rooms){
-	        if(!rooms.hasOwnProperty(room)) continue;
+	        if(!rooms.hasOwnProperty(room)){ continue; }
 			if(rooms[room].contains(theSprite)){
 				contained = true;
 				break;
@@ -346,7 +340,7 @@ function serializeLooseObjects(output,rooms,sprites){
 		}
 	}
 	for(var button in Sburb.buttons){
-	    if(!Sburb.buttons.hasOwnProperty(button)) continue;
+	    if(!Sburb.buttons.hasOwnProperty(button)){ continue; }
 		var theButton = Sburb.buttons[button];
 		if(!Sburb.hud[theButton.name]){
 			output = theButton.serialize(output);
@@ -361,7 +355,7 @@ function serializeRooms(output, rooms)
 {
 	output = output.concat("\n<rooms>\n");
 	for(var room in rooms){
-	    if(!rooms.hasOwnProperty(room)) continue;
+	    if(!rooms.hasOwnProperty(room)){ continue; }
 		output = rooms[room].serialize(output);
 	}
 	output = output.concat("\n</rooms>\n");
@@ -372,7 +366,7 @@ function serializeGameState(output, gameState)
 {
 	output = output.concat("\n<gameState>\n");
 	for(var key in gameState) {
-	    if(!gameState.hasOwnProperty(key)) continue;
+	    if(!gameState.hasOwnProperty(key)){ continue; }
 		output = output.concat("  <"+key+">"+encodeXML(gameState[key])+"</"+key+">");
 	}
 	output = output.concat("\n</gameState>\n");
@@ -397,7 +391,7 @@ function serializeActionQueues(output, actionQueues)
 function serializeAssets(output,assets,effects){
 	output = output.concat("\n<assets>");
 	for(var asset in assets){
-	    if(!assets.hasOwnProperty(asset)) continue;
+	    if(!assets.hasOwnProperty(asset)){ continue; }
 		var curAsset = assets[asset];
 		var innerHTML = "";
 
@@ -439,7 +433,7 @@ function serializeAssets(output,assets,effects){
 	output = output.concat("\n</assets>\n");
 	output = output.concat("\n<effects>");
 	for(var effect in effects){
-	    if(!effects.hasOwnProperty(effect)) continue;
+	    if(!effects.hasOwnProperty(effect)){ continue; }
 		var curEffect = effects[effect];
 		output = curEffect.serialize(output);
 	}
@@ -455,13 +449,13 @@ function serializeTemplates(output,templates){
 		// XMLSerializer exists in current Mozilla browsers
 		serializer = new XMLSerializer();
 		for(var template in templates){
-	        if(!templates.hasOwnProperty(template)) continue;
+	        if(!templates.hasOwnProperty(template)){ continue; }
 			output = output.concat(serializer.serializeToString(templates[template]));
 		}
 	}catch (e) {
 		// Internet Explorer has a different approach to serializing XML
 		for(var template in templates){
-	        if(!templates.hasOwnProperty(template)) continue;
+	        if(!templates.hasOwnProperty(template)){ continue; }
 			output = output.concat(templates[template].xml);
 		}
 	}
@@ -473,14 +467,14 @@ function serializeTemplates(output,templates){
 function serializeHud(output,hud,dialoger){
 	output = output.concat("\n<hud>");
 	for(var content in hud){
-        if(!hud.hasOwnProperty(content)) continue;
+        if(!hud.hasOwnProperty(content)){ continue; }
 		output = hud[content].serialize(output);
 	}
 	output = Sburb.dialoger.serialize(output);
 	var animations = dialoger.dialogSpriteLeft.animations;
 	output = output.concat("\n<dialogsprites>");
 	for(var animation in animations){
-        if(!animations.hasOwnProperty(animation)) continue;
+        if(!animations.hasOwnProperty(animation)){ continue; }
 		output = animations[animation].serialize(output);
 	}
 	output = output.concat("\n</dialogsprites>");
@@ -508,7 +502,7 @@ function purgeState(){
 		Sburb.bgm = null;
 	}
     for(var bin in Sburb.Bins) {
-        if(!Sburb.Bins.hasOwnProperty(bin)) continue;
+        if(!Sburb.Bins.hasOwnProperty(bin)){ continue; }
         Sburb.Bins[bin].innerHTML = "";
     }
 	Sburb.gameState = {};
@@ -559,16 +553,16 @@ Sburb.loadSerialFromXML = function(file,keepOld) {
         } catch(err) {
             if (err instanceof XMLParsingError) {
                 if (err.file) {
-                    console.error("Loaded from '"+file+"'")
+                    console.error("Loaded from '"+file+"'");
                 } else {
-                    err.file = file
-                    console.error("Error in '"+file+"'")
+                    err.file = file;
+                    console.error("Error in '"+file+"'");
                 }
             }
             throw err;
         }
     }
-}
+};
 
 //main serial loading
 function loadSerial(serialText, keepOld) {
@@ -643,7 +637,7 @@ Sburb.parseXML = function(inText) {
     }
 
     return parsed.documentElement;
-}
+};
 
 function XMLParsingError(error, input) {
     this.name = "XMLParsingError";
@@ -659,7 +653,7 @@ function parseXMLError(n) {
     if(n.nodeName == "h3") {
         return "";
     }
-    var error = ""
+    var error = "";
     for(var i=0; i<n.childNodes.length; i++) {
         error = error + parseXMLError(n.childNodes[i]);
     }
@@ -685,7 +679,7 @@ function loadSerialAssets(input){
   if(description){
   	Sburb.assetManager.description = description.value;
   }else{
-  	Sburb.assetManager.description = "assets"
+  	Sburb.assetManager.description = "assets";
   }
 
   var newAssets = input.getElementsByTagName("asset");
@@ -712,8 +706,9 @@ function parseSerialAsset(curAsset) {
 	var blobUrlsAttr = attributes.getNamedItem("blob-urls");
 	var blobUrls = [];
 
-	if(blobUrlsAttr)
+	if(blobUrlsAttr){
 		blobUrls = blobUrlsAttr.value.split(";");
+	}
 
 	if(blobUrls.length === 0) blobUrls = null;
 
@@ -823,7 +818,7 @@ function parseTemplateClasses(input){
 
 function applyTemplateClasses(input){
 	for(var className in templateClasses){
-        if(!templateClasses.hasOwnProperty(className)) continue;
+        if(!templateClasses.hasOwnProperty(className)){ continue; }
 		var templateNode = templateClasses[className];
 	 	var candidates = input.getElementsByTagName(templateNode.nodeName);
 	 	for(var j=0;j<candidates.length;j++){
@@ -917,8 +912,7 @@ function parseGameState(input) {
 		for(var j=0; j<children.length; j++) {
 			var node = children[j];
 
-			if(node.nodeType === 3) //Text node, formatting node
-				continue;
+			if(node.nodeType === 3){ continue; } //Text node, formatting node
 
 			var key = node.tagName;
 			var value = node.firstChild.nodeValue;
@@ -972,7 +966,7 @@ function parseState(input){
   		Sburb.curRoom.enter();
   	}else if(Sburb.curRoom==null && Sburb.char!=null){
   		for(var roomName in Sburb.rooms){
-            if(!Sburb.rooms.hasOwnProperty(roomName)) continue;
+            if(!Sburb.rooms.hasOwnProperty(roomName)){ continue; }
   			var room = Sburb.rooms[roomName];
   			if(room.contains(Sburb.char)){
   				Sburb.curRoom = room;
@@ -1110,7 +1104,7 @@ function serialLoadRoomTriggers(newRoom, triggers){
 Sburb.serializeAttribute = function(base,val){
 	var sub;
 	return base[val]?" "+val+"='"+base[val]+"' ":"";
-}
+};
 
 Sburb.serializeAttributes = function(base){
 	str = "";
@@ -1118,7 +1112,7 @@ Sburb.serializeAttributes = function(base){
 		str = str.concat(Sburb.serializeAttribute(base,arguments[i]));
 	}
 	return str;
-}
+};
 
 Sburb.serialLoadRoomSprites = serialLoadRoomSprites;
 Sburb.serialLoadRoomPaths = serialLoadRoomPaths;

@@ -18,30 +18,30 @@ Sburb.Sound = function(asset){
 			that.asset.pause();
 		});
 	}
-}
+};
 
 //play this sound
 Sburb.Sound.prototype.play = function(pos) {
 	this.fixVolume();
 	this.asset.play();
-}
+};
 
 //stop this sound
 Sburb.Sound.prototype.stop = function() {
 	this.asset.stop();
 	//console.log("stopping the sound...");
-}
+};
 
 //ensure the sound is playing at the global volume
 Sburb.Sound.prototype.fixVolume = function(){
 	this.asset.volume(Sburb.globalVolume);
 //	console.log(this.asset._volume);
-}
+};
 
 //check if the sound is playing
 Sburb.Sound.prototype.playing = function(pos) {
 	return this.asset.playing();
-}
+};
 
 
 
@@ -53,7 +53,7 @@ Sburb.Sound.prototype.playing = function(pos) {
 Sburb.BGM = function(asset, startLoop, priority) {
     Sburb.Sound.call(this,asset);
     this.asset.loop(true);
-}
+};
 
 Sburb.BGM.prototype = new Sburb.Sound();
 

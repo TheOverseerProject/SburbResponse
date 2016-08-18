@@ -1,3 +1,5 @@
+//class currently not used
+
 var Sburb = (function(Sburb){
 
 
@@ -10,7 +12,7 @@ var Sburb = (function(Sburb){
 //Fighter
 Sburb.Fighter = function(name,x,y,width,height){
 	Sburb.Sprite.call(this,name,x,y,width,height,null,null,Sburb.Sprite.prototype.MG_DEPTHING,true);
-	
+
 	this.accel = 1.5;
 	this.decel = 1;
 	this.friction = 0.87;
@@ -118,12 +120,12 @@ Sburb.Fighter.prototype.collides = function(sprite,dx,dy){
 	var y1 = this.y+(dy?dy:0);
 	var w1 = this.width/2;
 	var h1 = this.height/2;
-	
+
 	var x2 = sprite.x;
 	var y2 = sprite.y;
 	var w2 = sprite.width/2;
 	var h2 = sprite.height/2;
-	
+
 	var xDiff = x2-x1;
 	var yDiff = y2-y1;
 	return Math.sqrt(xDiff*xDiff/w2/w1+yDiff*yDiff/h2/h1)<2;
@@ -154,7 +156,7 @@ Sburb.Fighter.prototype.tryToMove = function(room){
 	}
 	var vx = this.vx;
 	var vy = this.vy;
-	
+
 	var i;
 	var moveMap = room.getMoveFunction(this);
 	var wasShifted = false;
@@ -170,7 +172,7 @@ Sburb.Fighter.prototype.tryToMove = function(room){
 	var dy = vy;
 	this.x+=vx;
 	this.y+=vy;
-	
+
 	var collides = room.collides(this);
 	if(collides){
 		var tx = 0;
@@ -191,7 +193,7 @@ Sburb.Fighter.prototype.tryToMove = function(room){
 		this.y+=ty;
 		dx+=tx;
 		dy+=ty;
-		
+
 		var theta = Math.atan2(this.y-collides.y,this.x-collides.x);
 		this.vx += tx;
 		this.vy += ty;
@@ -213,7 +215,7 @@ Sburb.Fighter.prototype.tryToMove = function(room){
 			collided = true;
 		}
 	}
-	
+
 	if(collided){
 		var tx = 0;
 		var ty = 0;
@@ -236,7 +238,7 @@ Sburb.Fighter.prototype.tryToMove = function(room){
 		this.y+=ty;
 		dx+=tx;
 		dy+=ty;
-		
+
 		this.vx += tx;
 		this.vy += ty;
 		this.vx*=0.9;
@@ -280,7 +282,7 @@ Sburb.Fighter.prototype.serialize = function(output){
 
 Sburb.parseFighter = function(spriteNode, assetFolder) {
 	var attributes = spriteNode.attributes;
-	
+
 	var newName = null;
 	var newX = 0;
 	var newY = 0;
@@ -307,7 +309,7 @@ Sburb.parseFighter = function(spriteNode, assetFolder) {
 		}
 	}
 	newSprite.startAnimation(newState);
-	
+
 	return newSprite;
 }
 

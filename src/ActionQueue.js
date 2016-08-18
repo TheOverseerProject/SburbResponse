@@ -15,7 +15,7 @@ Sburb.ActionQueue = function(action, id, groups, noWait, paused, trigger) {
 	this.noWait = noWait ? noWait : false;
 	this.paused = paused ? true : false;
 	this.trigger = trigger;
-}
+};
 
 Sburb.ActionQueue.prototype.hasGroup = function(group) {
 	for(var i=0;i<this.groups.length;i++) {
@@ -24,7 +24,7 @@ Sburb.ActionQueue.prototype.hasGroup = function(group) {
 		}
 	}
 	return false;
-}
+};
 
 Sburb.ActionQueue.prototype.serialize = function(output) {
 	if(!this.curAction) {
@@ -44,7 +44,7 @@ Sburb.ActionQueue.prototype.serialize = function(output) {
 
 	output = output.concat("</actionQueue>");
 	return output;
-}
+};
 
 
 
@@ -61,7 +61,7 @@ Sburb.getActionQueueById = function(id) {
 			return queue;
 		}
 	}
-}
+};
 
 Sburb.removeActionQueueById = function(id) {
 	for(var i=0;i<this.actionQueues.length;i++) {
@@ -71,7 +71,7 @@ Sburb.removeActionQueueById = function(id) {
 			return;
 		}
 	}
-}
+};
 
 Sburb.forEachActionQueueInGroup = function(group, callback) {
 	for(var i=0;i<this.actionQueues.length;i++) {
@@ -80,7 +80,7 @@ Sburb.forEachActionQueueInGroup = function(group, callback) {
 			callback(queue);
 		}
 	}
-}
+};
 
 Sburb.removeActionQueuesByGroup = function(group) {
 	for(var i=0;i<this.actionQueues.length;i++) {
@@ -90,7 +90,7 @@ Sburb.removeActionQueuesByGroup = function(group) {
 			i--;
 		}
 	}
-}
+};
 
 Sburb.parseActionQueue = function(node) {
 	var attributes = node.attributes;
@@ -121,7 +121,7 @@ Sburb.parseActionQueue = function(node) {
 	newPaused = (temp=attributes.getNamedItem("paused"))?temp.value=="true":newPaused;
 
 	return new Sburb.ActionQueue(newAction,newId,newGroups,newNoWait,newPaused,newTrigger);
-}
+};
 
 return Sburb;
 })(Sburb || {});

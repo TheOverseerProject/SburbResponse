@@ -28,8 +28,8 @@ Sburb.AssetManager = function() {
     this.ajaxRunning = 0;
     this.ajaxCache = []; // Store those suckers
     // Cache urls
-    this.cache = {}
-    this.blobs = {}
+    this.cache = {};
+    this.blobs = {};
     // Descriptors
     this.description = "";
     this.resourcePath = "";
@@ -48,19 +48,19 @@ Sburb.AssetManager = function() {
         "mp4": "video/mp4",
         "webm": "video/webm"
     };
-}
+};
 
 Sburb.AssetManager.prototype.start = function() {
     this.stop();
     this.loopID = setInterval(function() { Sburb.assetManager.loop(); }, 33);
-}
+};
 
 Sburb.AssetManager.prototype.stop = function() {
     if(this.loopID) {
         clearInterval(this.loopID);
         this.loopID = false;
     }
-}
+};
 
 Sburb.AssetManager.prototype.loop = function() {
     if(Sburb.pressed[Sburb.Keys.space] && !this.space) {
@@ -69,13 +69,14 @@ Sburb.AssetManager.prototype.loop = function() {
     } else {
         this.refresh = false;
     }
-    if(!Sburb.pressed[Sburb.Keys.space])
+    if(!Sburb.pressed[Sburb.Keys.space]){
         this.space = false;
-    
+	}
+
     Sburb.debugger.handleInputs(Sburb.pressed);
     this.draw();
     Sburb.debugger.draw();
-}
+};
 
 Sburb.AssetManager.prototype.resolvePath = function(path){
     if(path.indexOf(this.resourcePath)==-1){
@@ -83,17 +84,17 @@ Sburb.AssetManager.prototype.resolvePath = function(path){
     }else{
         return path+"?"+Sburb.version; // Only cache resources of the same version
     }
-}
+};
 
 //get the remaining assets to be loaded
 Sburb.AssetManager.prototype.totalAssetsRemaining = function() {
     return this.totalAssets - this.totalLoaded;
-}
+};
 
 //have all the assets been loaded
 Sburb.AssetManager.prototype.finishedLoading = function() {
     return (this.totalAssets && (this.totalAssets == this.totalLoaded));
-}
+};
 
 Sburb.AssetManager.prototype.draw = function(){
     Sburb.stage.fillStyle = "rgb(0,0,0)";
@@ -102,7 +103,7 @@ Sburb.AssetManager.prototype.draw = function(){
         var preloaderBG = Sburb.assets["preloaderBG"];
         Sburb.stage.drawImage(preloaderBG,0,0,preloaderBG.width,preloaderBG.height,0,0,preloaderBG.width,preloaderBG.height);
     }
-    Sburb.stage.fillStyle = "rgb(255,255,255)"
+    Sburb.stage.fillStyle = "rgb(255,255,255)";
     Sburb.stage.font="10px Verdana";
     Sburb.stage.textAlign = "center";
   //Sburb.stage.fillText("Loading "+this.description,Stage.width/2,Stage.height-80);
@@ -119,14 +120,16 @@ Sburb.AssetManager.prototype.draw = function(){
   }
   if(this.error.length) {
       Sburb.stage.textAlign = "left";
-      for(var i = 0; i < this.error.length; i++)
+      for(var i = 0; i < this.error.length; i++){
           Sburb.stage.fillText("Error: "+this.error[i],10,20+15*i);
+	  }
       Sburb.stage.textAlign = "center";
       if(this.failed.length) {
           if(this.refresh) {
               this.error = ["Refreshing..."];
-              for(var i=0; i<this.failed.length;i++)
+              for(var i=0; i<this.failed.length;i++){
                 this.assets[this.failed[i]].reload();
+			  }
               this.failed = [];
           } else {
               Sburb.stage.font="18px Verdana";
@@ -134,31 +137,32 @@ Sburb.AssetManager.prototype.draw = function(){
           }
       }
   }
-}
+};
 
 //check if a specific asset has been loaded
 Sburb.AssetManager.prototype.isLoaded = function(name) {
     // turn undefined into false
     return this.loaded[name] ? true : false;
-}
+};
 
 //reset the asset manager to have no assets
 Sburb.AssetManager.prototype.purge = function() {
     for(var k in this.recurrences) {
-        if(this.recurrences.hasOwnProperty(k))
+        if(this.recurrences.hasOwnProperty(k)){
             clearTimeout(this.recurrences[k]);
+		}
     }
     this.totalLoaded = 0;
     this.totalAssets = 0;
     this.totalMeta = 0;
     this.totalSize = 0;
     this.loadedSize = 0;
-    this.assets = {}
-    this.loaded = {}
+    this.assets = {};
+    this.loaded = {};
     this.recurrences = {};
     this.error = [];
     this.failed = [];
-}
+};
 
 //load the given asset
 Sburb.AssetManager.prototype.loadAsset = function(assetObj) {
@@ -172,35 +176,36 @@ Sburb.AssetManager.prototype.loadAsset = function(assetObj) {
     var oThis = this;
     this.assetAdded(name);
     var loadedAsset = this.assets[name].assetOnLoadFunction(function() { oThis.assetLoaded(name); });
-    if(!loadedAsset)
+    if(!loadedAsset){
         this.assets[name].assetOnFailFunction(function() { oThis.assetFailed(name); });
-}
+	}
+};
 
 //log that the asset was added
 Sburb.AssetManager.prototype.assetAdded = function(name) {
     this.totalAssets++;
     this.loaded[name] = false;
-}
+};
 
 //log that the asset was loaded
 Sburb.AssetManager.prototype.assetLoaded = function(name){
     if(this.assets[name]){
         if(!this.loaded[name]){
-            this.loaded[name] = true
+            this.loaded[name] = true;
             this.totalLoaded++;
-            
+
             if(this.finishedLoading() && Sburb._hardcode_load){
                 // only really here to work for old hard-loading
                 Sburb.finishInit();
                 initFinished = true;
-                
+
             }
         }
     }
 };
 
 Sburb.AssetManager.prototype.assetFailed = function(name) {
-    var msg = name + " failed to load"
+    var msg = name + " failed to load";
     console.log(msg);
     this.error.push(msg);
     this.failed.push(name);
@@ -217,67 +222,68 @@ Sburb.AssetManager.prototype.assetFailed = function(name) {
 // use window.btoa' step. According to my tests, this appears to be a faster approach:
 // http://jsperf.com/encoding-xhr-image-data/5
 Sburb.base64ArrayBuffer = function(arrayBuffer) {
-  var base64    = ''
-  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  var base64    = '';
+  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-  var bytes         = new window[Sburb.prefixed("Uint8Array",window,false)](arrayBuffer)
-  var byteLength    = bytes.byteLength
-  var byteRemainder = byteLength % 3
-  var mainLength    = byteLength - byteRemainder
+  var bytes         = new window[Sburb.prefixed("Uint8Array",window,false)](arrayBuffer);
+  var byteLength    = bytes.byteLength;
+  var byteRemainder = byteLength % 3;
+  var mainLength    = byteLength - byteRemainder;
 
-  var a, b, c, d
-  var chunk
+  var a, b, c, d;
+  var chunk;
 
   // Main loop deals with bytes in chunks of 3
   for (var i = 0; i < mainLength; i = i + 3) {
     // Combine the three bytes into a single integer
-    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
 
     // Use bitmasks to extract 6-bit segments from the triplet
-    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
-    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
-    d = chunk & 63               // 63       = 2^6 - 1
+    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048)   >> 12; // 258048   = (2^6 - 1) << 12
+    c = (chunk & 4032)     >>  6; // 4032     = (2^6 - 1) << 6
+    d = chunk & 63;               // 63       = 2^6 - 1
 
     // Convert the raw binary segments to the appropriate ASCII encoding
-    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
   }
 
   // Deal with the remaining bytes and padding
   if (byteRemainder == 1) {
-    chunk = bytes[mainLength]
-    
-    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
-    
+    chunk = bytes[mainLength];
+
+    a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
+
     // Set the 4 least significant bits to zero
-    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
+    b = (chunk & 3)   << 4; // 3   = 2^2 - 1
 
-    base64 += encodings[a] + encodings[b] + '=='
+    base64 += encodings[a] + encodings[b] + '==';
   } else if (byteRemainder == 2) {
-    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
 
-    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
+    a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008)  >>  4; // 1008  = (2^6 - 1) << 4
 
     // Set the 2 least significant bits to zero
-    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
+    c = (chunk & 15)    <<  2; // 15    = 2^4 - 1
 
-    base64 += encodings[a] + encodings[b] + encodings[c] + '='
+    base64 += encodings[a] + encodings[b] + encodings[c] + '=';
   }
-  
-  return base64
-}
+
+  return base64;
+};
 
 Sburb.loadGenericAsset = function(asset, path, id) {
     var assetPath = Sburb.assetManager.resolvePath(path);
     var ext = path.substring(path.indexOf(".")+1,path.length);
     var type = Sburb.assetManager.mimes[ext];
-    
+    var url = null;
+
     // We've loaded this before, don't bother loading it again
     if(assetPath in Sburb.assetManager.blobs) {
         var URLCreator = window[Sburb.prefixed("URL",window,false)];
         var blob = Sburb.assetManager.blobs[assetPath];
-        var url = false;
+        url = false;
         if(Sburb.tests.blobrevoke) {
             url = URLCreator.createObjectURL(blob, {autoRevoke: false});
         } else {
@@ -287,11 +293,11 @@ Sburb.loadGenericAsset = function(asset, path, id) {
         return;
     }
     if(assetPath in Sburb.assetManager.cache) {
-        var url = Sburb.assetManager.cache[assetPath];
+        url = Sburb.assetManager.cache[assetPath];
         setTimeout(function() { asset.success(url, id); }, 0); // Async call success so things don't blow up
         return;
     }
-    
+
     // Hold on, can't load too many at once
     if(Sburb.assetManager.ajaxRunning >= Sburb.assetManager.maxAjax) {
         Sburb.assetManager.ajaxCache.push([asset, path, id]);
@@ -299,7 +305,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
     } else {
         Sburb.assetManager.ajaxRunning += 1;
     }
-    
+
     var cleanup = function() {
         Sburb.assetManager.ajaxRunning -= 1;
         if(Sburb.assetManager.ajaxCache.length) {
@@ -307,7 +313,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
             Sburb.loadGenericAsset(args[0], args[1], args[2]);
         }
     };
-    
+
     // Welcome to fallback hell
     // NOTE: We use array.contains because future fallbacks will just get a higher number
     //       Hence inequalities won't work and multiple == would get messy fast
@@ -335,7 +341,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
             } else {
                 console.log("ERROR: Length not computable for " + path);
             }
-        }
+        };
         xhr.onload = function() {
             if((this.status == 200 || this.status == 0) && this.response) {
                 // First, let the loader know we're done
@@ -407,7 +413,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
                 asset.failure(id);
                 cleanup();
             }
-        }
+        };
         xhr.onabort = function() { asset.failure(id); cleanup(); };
         xhr.onerror = function() { asset.failure(id); cleanup(); };
         xhr.send();
@@ -476,7 +482,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
                 asset.failure(id);
                 cleanup();
             }
-        }
+        };
         xhr.onabort = function() { asset.failure(id); cleanup(); };
         xhr.onerror = function() { asset.failure(id); cleanup(); };
         xhr.send();
@@ -504,7 +510,7 @@ Sburb.loadGenericAsset = function(asset, path, id) {
                 asset.failure(id);
                 cleanup();
             }
-        }
+        };
         xhr.onabort = function() { asset.failure(id); cleanup(); };
         xhr.onerror = function() { asset.failure(id); cleanup(); };
         xhr.send();
@@ -540,7 +546,7 @@ Sburb.createGraphicAsset = function(name, path) {
         }
     };
     ret.failure = function() { ret.failed = true; };
-    ret.onload = function() { ret.loaded = true; }
+    ret.onload = function() { ret.loaded = true; };
     ret.onerror = ret.failure;
     ret.assetOnLoadFunction = function(fn) {
         if(ret.loaded) {
@@ -548,9 +554,9 @@ Sburb.createGraphicAsset = function(name, path) {
             return true;
         } else {
             ret.onload = function () {
-                ret.loaded = true
+                ret.loaded = true;
                 if(fn) { fn(); }
-            }
+            };
             return false;
         }
     };
@@ -562,7 +568,7 @@ Sburb.createGraphicAsset = function(name, path) {
             ret.failure = function() {
                 if(!ret.failed && fn) { fn(); }
                 ret.failed = true;
-            }
+            };
             return false;
         }
     };
@@ -573,7 +579,7 @@ Sburb.createGraphicAsset = function(name, path) {
     };
     ret.reload();
     return ret;
-}
+};
 
 //create an audio Asset
 Sburb.createAudioAsset = function(name,sources) {
@@ -592,7 +598,7 @@ Sburb.createAudioAsset = function(name,sources) {
             play: function() {},
             loop: function() {},
             playing: function() {},
-            addEventListener: function() {},
+            addEventListener: function() {}
         };
     }
     var ret = new Howl({ src: ['resources\\sample\\'+sources[0],'resources\\sample\\'+sources[1]], preload: true }); //TODO not this.
@@ -629,7 +635,7 @@ Sburb.createAudioAsset = function(name,sources) {
             return true;
         } else {
             ret.isLoaded = function () {
-                ret.loaded = true
+                ret.loaded = true;
                 if(fn) { fn(); }
             }
             return false;
@@ -684,17 +690,18 @@ Sburb.createAudioAsset = function(name,sources) {
     };
     ret.reload();
     return ret;
-}
+};
 
-//create a flash movie Asset
+//create a movie Asset
 Sburb.createMovieAsset = function(name,path){
     var ret = {}; //src:Sburb.assetManager.resolvePath(path)};
     ret.name = name;
     ret.type = "movie";
     ret.originalVals = path;
-    
+
     ret.done = function(url) {
         ret.src = url;
+        //TODO figure out filetype
         Sburb.Bins["movie"].innerHTML += '<div id="'+name+'"><video id="movie'+name+'" width="'+Sburb.Stage.width+'" height="'+Sburb.Stage.height+'"><source src="'+ret.src+'" type="video/mp4">Your browser does not support the video tag.</video></div>';
         document.getElementById(name).style.display = "none";
     }
@@ -707,9 +714,9 @@ Sburb.createMovieAsset = function(name,path){
         } else {
             ret.success = function (url) {
                 ret.done(url);
-                ret.loaded = true
+                ret.loaded = true;
                 if(fn) { fn(); }
-            }
+            };
             return false;
         }
     };
@@ -721,7 +728,7 @@ Sburb.createMovieAsset = function(name,path){
             ret.failure = function() {
                 if(!ret.failed && fn) { fn(); }
                 ret.failed = true;
-            }
+            };
             return false;
         }
     };
@@ -730,11 +737,11 @@ Sburb.createMovieAsset = function(name,path){
         ret.failed = false;
         Sburb.loadGenericAsset(ret, path);
     };
-    
+
     ret.reload();
 
     return ret;
-}
+};
 
 //create a path asset
 Sburb.createPathAsset = function(name, path) {
@@ -745,10 +752,10 @@ Sburb.createPathAsset = function(name, path) {
     ret.assetOnLoadFunction = function(fn) {
         if(fn) { fn(); }
         return;
-    }
-    ret.assetOnFailFunction = function(fn) { return false; }
-    return ret
-}
+    };
+    ret.assetOnFailFunction = function(fn) { return false; };
+    return ret;
+};
 
 //create a font
 Sburb.createFontAsset = function(name, sources){
@@ -774,9 +781,9 @@ Sburb.createFontAsset = function(name, sources){
             return true;
         } else {
             ret.done = function (url) {
-                ret.loaded = true
+                ret.loaded = true;
                 if(fn) { fn(); }
-            }
+            };
             return false;
         }
     };
@@ -788,7 +795,7 @@ Sburb.createFontAsset = function(name, sources){
             ret.failure = function() {
                 if(!ret.failed && fn) { fn(); }
                 ret.failed = true;
-            }
+            };
             return false;
         }
     };
@@ -796,7 +803,7 @@ Sburb.createFontAsset = function(name, sources){
         ret.loaded = false;
         ret.failed = false;
         var sourceList = sources.split(',');
-        ret.remaining = 0
+        ret.remaining = 0;
         ret.sources = [];
         ret.extra = "";
         for(var i=0;i<sourceList.length;i++){
@@ -821,15 +828,15 @@ Sburb.createFontAsset = function(name, sources){
             }else if(type == "local"){
                 ret.sources.push("local('"+path+"')");
             }else if(type == "weight"){
-                ret.extra+= "font-weight:"+path+"; "
+                ret.extra+= "font-weight:"+path+"; ";
             }
         }
     };
-    
+
     ret.reload();
-    
+
     return ret
-}
+};
 
 //create a text asset
 Sburb.createTextAsset = function(name, text) {
@@ -840,10 +847,10 @@ Sburb.createTextAsset = function(name, text) {
     ret.assetOnLoadFunction = function(fn) {
         if(fn) { fn(); }
         return;
-    }
-    ret.assetOnFailFunction = function(fn) { return false; }
-    return ret
-}
+    };
+    ret.assetOnFailFunction = function(fn) { return false; };
+    return ret;
+};
 
 return Sburb;
 })(Sburb || {});

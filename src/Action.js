@@ -11,7 +11,7 @@ var Sburb = (function(Sburb){
 Sburb.Action = function(command,info,name,sprite,followUp,noWait,noDelay,times,soft,silent){
 	this.sprite = sprite?sprite:null;
 	this.name = name?name:null;
-	this.command = command
+	this.command = command;
 	this._info = info;
 	this.followUp = followUp?followUp:null;
 	this.noWait = noWait?noWait:false;
@@ -23,23 +23,23 @@ Sburb.Action = function(command,info,name,sprite,followUp,noWait,noDelay,times,s
 		this.silent = silent?silent:false;
 	}
 	this.times = times?times:1;
-}
+};
 
 Sburb.Action.prototype.info = function(){
 	if (this._info) {
-		if (typeof(this._info) == "string") {
+		if (typeof(this._info) === "string") {
 			return this._info;
 		} else if (this._info.text) {
 			return this._info.text;
 		}
 	}
 	return "";
-}
+};
 
 //Make an exact copy
 Sburb.Action.prototype.clone = function(){
 	return new Sburb.Action(this.command, this._info, this.name, this.sprite, this.followUp, this.noWait, this.noDelay, this.times, this.soft, this.silent);
-}
+};
 
 //Serialize to XML (see serialization.js)
 Sburb.Action.prototype.serialize = function(output){
@@ -63,7 +63,7 @@ Sburb.Action.prototype.serialize = function(output){
 	}
 	output = output.concat("</action>");
 	return output;
-}
+};
 
 
 
@@ -80,14 +80,14 @@ Sburb.parseAction = function(node) {
 	var oldAction = null;
 	do{
 	  	var attributes = node.attributes;
-		
+
 		if(attributes.getNamedItem("sprite") && attributes.getNamedItem("sprite").value!="null"){
 			targSprite = attributes.getNamedItem("sprite").value;
 		}
 		var times = attributes.getNamedItem("times") || attributes.getNamedItem("loops") || attributes.getNamedItem("for");
 
-		var info = node.firstChild?getNodeText(node):""
-		if(typeof(info) == "string") {
+		var info = node.firstChild?getNodeText(node):"";
+		if(typeof(info) === "string") {
 			info = unescape(info).trim();
 		}
 
@@ -123,12 +123,12 @@ Sburb.parseAction = function(node) {
 			break;
 		}
 	}while(node);
-	
+
 	return firstAction;
-}
+};
 
 function getNodeText(xmlNode){
-  if(!xmlNode) return '';
+  if(!xmlNode) { return ''; }
   for(var i=0;i<xmlNode.childNodes.length;i++){
   	var child = xmlNode.childNodes[i];
   	if(child.tagName=="args"){

@@ -1,7 +1,7 @@
 var Sburb = (function(Sburb){
 
 /* Talking text markup
-@ denotes a new dialogue box, the string following it indicates character animation, 
+@ denotes a new dialogue box, the string following it indicates character animation,
 the first two characters indicating character specific formatting.
 Alternatively, you can use an underscore to override the two character identifier
 limit.
@@ -32,7 +32,7 @@ Insterting /0x/ ends the previously specified behaviour.
 Sburb.FontEngine = function(text){
 
 	//This is intended for monospace fonts
-	//this.font-family 
+	//this.font-family
 	this.font = "18px SburbFont";
 	this.color = "#000000";
 	this.text = typeof text == "string"?text:"";
@@ -46,13 +46,13 @@ Sburb.FontEngine = function(text){
 	this.lineHeight = 17;
 	this.charWidth = 8;
 	this.align = "left";
-	
-	this.formatted = true;
-	
-	this.formatQueue = [];
-}
 
-Sburb.FontEngine.prototype.prefixColours = {	
+	this.formatted = true;
+
+	this.formatQueue = [];
+};
+
+Sburb.FontEngine.prototype.prefixColours = {
 	aa : "#a10000",aradia : "#a10000",
 	ac : "#416600",nepeta : "#416600",
 	ag : "#005682",vriska : "#005682",
@@ -78,28 +78,28 @@ Sburb.FontEngine.prototype.setStyle = function(font,color,lineHeight,charWidth){
 	this.lineHeight = typeof lineHeight == "number" ? lineHeight:this.lineHeight;
 	this.charWidth = typeof charWidth == "number" ? charWidth:this.charWidth;
 	this.parseText();
-}
+};
 
 //set formatted
 Sburb.FontEngine.prototype.setFormatted = function(formatted){
 	this.formatted = formatted;
-}
+};
 
 //set the text
 Sburb.FontEngine.prototype.setText = function(text){
 	this.text = text;
 	this.parseEverything();
-}
+};
 
 Sburb.FontEngine.prototype.setAlign = function(align){
 	this.align = align;
-}
+};
 
 //show a substring of the text
 Sburb.FontEngine.prototype.showSubText = function(start,end){
 	this.start = typeof start == "number" ? start:this.start;
 	this.end = typeof end == "number" ? end:this.end;
-}
+};
 
 //set the dimensions
 Sburb.FontEngine.prototype.setDimensions = function(x,y,width,height){
@@ -108,13 +108,13 @@ Sburb.FontEngine.prototype.setDimensions = function(x,y,width,height){
 	this.width = typeof width == "number" ? width:this.width;
 	this.height = typeof height == "number" ? height:this.height;
 	this.parseText();
-}
+};
 
 //parse and format the current text with the current settings
 Sburb.FontEngine.prototype.parseEverything = function(){
 	this.parseFormatting();
 	this.parseText();
-}
+};
 
 //parse the text
 Sburb.FontEngine.prototype.parseText = function(){ //break it up into lines
@@ -145,33 +145,33 @@ Sburb.FontEngine.prototype.parseText = function(){ //break it up into lines
 		}
 	}
 	this.lines.push(this.text.substring(lineStart,i));
-}
+};
 
 //parse the formatting of the text
 Sburb.FontEngine.prototype.parseFormatting = function(){
 	this.formatQueue = [];
 	if(this.formatted){
-		
+
 		this.escaped = {};
-		
+
 		this.parsePrefixes();
-	
+
 		this.parseEscapes();
-	
-		
-	
+
+
+
 		this.parseUnderlines();
-	
+
 		this.parseColors();
 	}
-}
+};
 
 Sburb.FontEngine.prototype.parseEscapes = function(){
 	var index;
 	var escapeLocation = 0;
 	do{
 		index = this.text.indexOf("/",escapeLocation);
-		
+
 		if(index<this.text.length-1 && index>=0){
 			var character = this.text.charAt(index+1);
 			if(character=="/"){
@@ -184,7 +184,7 @@ Sburb.FontEngine.prototype.parseEscapes = function(){
 				var count = 0;
 				for(var i=0;i<index;i++){
 					if(this.text.charAt(i)==character){
-						count++;			
+						count++;
 					}
 				}
 				characterListing[count+1] = true;
@@ -192,21 +192,21 @@ Sburb.FontEngine.prototype.parseEscapes = function(){
 		}
 		this.text = this.text.substring(0,index)+this.text.substring(index+1,this.text.length);
 	}while(index>=0);
-}
+};
 
 Sburb.FontEngine.prototype.parsePrefixes = function(){
 	var prefix = this.text.split(" ",1)[0];
 	var actor;
 	if(prefix!="!"){
 		if(prefix.indexOf("_")>=0){
-			actor = prefix.substring(0,this.text.indexOf("_"));	
+			actor = prefix.substring(0,this.text.indexOf("_"));
 		}else{
 			actor = prefix.substring(0,2);
 		}
 		this.parsePrefix(actor);
 	}
 	this.text = this.text.substring(prefix.length,this.text.length).trim();
-}
+};
 
 Sburb.FontEngine.prototype.parseUnderlines = function(){
 	var escapePoint = 0;
@@ -239,7 +239,7 @@ Sburb.FontEngine.prototype.parseUnderlines = function(){
 		this.text = this.text.substring(0,index)+this.text.substring(index+1,this.text.length);
 		this.realignFormatQueue(index,1);
 	}
-}
+};
 
 Sburb.FontEngine.prototype.parseColors = function(){
 	var escapePoint = 0;
@@ -274,7 +274,7 @@ Sburb.FontEngine.prototype.parseColors = function(){
 			this.realignFormatQueue(index,7);
 		}
 	}
-}
+};
 
 //add a format object to the formatQueue
 Sburb.FontEngine.prototype.addToFormatQueue = function(format){
@@ -286,7 +286,7 @@ Sburb.FontEngine.prototype.addToFormatQueue = function(format){
 		}
 	}
 	this.formatQueue.splice(newPlace,0,format);
-}
+};
 
 //clean up any descrepencies in the formatQueue
 Sburb.FontEngine.prototype.realignFormatQueue = function(startPos,shiftSize){
@@ -299,12 +299,12 @@ Sburb.FontEngine.prototype.realignFormatQueue = function(startPos,shiftSize){
 			curFormat.minIndex-=shiftSize;
 		}
 	}
-}
+};
 
 //parse a dialog prefix into formats
 Sburb.FontEngine.prototype.parsePrefix = function(prefix){
 	this.formatQueue.push(new Sburb.FormatRange(0,this.text.length,"colour",this.prefixColouration(prefix)));
-}
+};
 
 //get the colour of a prefix
 Sburb.FontEngine.prototype.prefixColouration = function(prefix){
@@ -313,18 +313,18 @@ Sburb.FontEngine.prototype.prefixColouration = function(prefix){
 	}else{
 		return "#000000";
 	}
-}
+};
 
 //get the next "box" of lines
 Sburb.FontEngine.prototype.nextBatch = function(){
 	this.realignFormatQueue(-1,this.batchLength());
 	this.lines.splice(0,Math.min(this.lines.length,Math.floor(this.height/this.lineHeight)));
 	return this.lines.length;
-}
+};
 
 Sburb.FontEngine.prototype.onLastBatch = function(){
 	return Math.floor(this.height/this.lineHeight)>=this.lines.length;
-}
+};
 
 //draw the FontEngine
 Sburb.FontEngine.prototype.draw = function(){
@@ -337,8 +337,8 @@ Sburb.FontEngine.prototype.draw = function(){
 	var currentFormats = [];
 	var nextStop;
 	var curLine;
-	
-	
+
+
 	i=0;
 	lenCount=0;
 	var offsetX = 0;
@@ -354,9 +354,9 @@ Sburb.FontEngine.prototype.draw = function(){
 		var curFont = this.font;
 		var curColor = this.color;
 		var underlining = false;
-		
+
 		nextStop = curLine.length;
-		
+
 		if(currentFormat<this.formatQueue.length && this.formatQueue[currentFormat].minIndex<=lenCount+linePos){
 			currentFormats.push(this.formatQueue[currentFormat]);
 			currentFormat++;
@@ -369,7 +369,7 @@ Sburb.FontEngine.prototype.draw = function(){
 		for(var k=0;k<currentFormats.length;k++){
 			if(currentFormats[k].type=="colour"){
 				curColor = currentFormats[k].extra;
-				
+
 			}else if(currentFormats[k].type=="underline"){
 				underlining = true;
 			}else if(currentFormats[k].type=="italic"){
@@ -408,12 +408,12 @@ Sburb.FontEngine.prototype.draw = function(){
 			linePos = -1;
 		}
 		var numChars = strEnd-strStart;
-		
+
 		if(numChars>0){
-			
+
 			var startX = this.x+offsetX;
 			var startY = this.y+i*this.lineHeight;
-			
+
 			//if(Sburb.stage.font != curFont){
 				Sburb.stage.font = curFont;
 			//}
@@ -446,13 +446,13 @@ Sburb.FontEngine.prototype.draw = function(){
 		}
 		Sburb.stage.restore();
 	}
-	
-}
+
+};
 
 //is the contents of the current "box" fully displayed
 Sburb.FontEngine.prototype.isShowingAll = function(){
 	return this.end>=this.batchLength();
-}
+};
 
 //get the length of the current "box"
 Sburb.FontEngine.prototype.batchLength = function(){
@@ -462,12 +462,12 @@ Sburb.FontEngine.prototype.batchLength = function(){
 		len+=this.lines[i].length;
 	}
 	return len;
-}
+};
 
 //show the contents of the current "box"
 Sburb.FontEngine.prototype.showAll = function(){
 	this.end = this.batchLength()+1;
-}
+};
 
 
 
@@ -483,7 +483,7 @@ Sburb.FormatRange = function(minIndex,maxIndex,type,extra){
 	this.maxIndex = maxIndex;
 	this.type = type;
 	this.extra = typeof extra == "string"?extra:"";
-}
+};
 
 
 

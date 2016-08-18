@@ -46,14 +46,14 @@ Sburb.Character = function(name,x,y,width,height,sx,sy,sWidth,sHeight,sheet,boot
 
 	this.becomeNPC();
 
-}
+};
 
 Sburb.Character.prototype = new Sburb.Sprite();
 Sburb.Character.prototype.followBufferLength = 6;
 
 //update as if one frame has passed
 Sburb.Character.prototype.update = function(curRoom){
-	this.interpolationPercentage = Math.max(Sburb.interpolationPercentage, .9);
+	this.interpolationPercentage = Math.max(Sburb.interpolationPercentage, 0.9);
 	this.handleFollowing(curRoom);
 
 	//what does this code block do????
@@ -66,7 +66,7 @@ Sburb.Character.prototype.update = function(curRoom){
 
 	this.tryToMove(this.vx,this.vy,curRoom);
 	Sburb.Sprite.prototype.update.call(this,curRoom);
-}
+};
 
 Sburb.Character.prototype.handleFollowing = function(curRoom){
 	if(this.following){
@@ -130,7 +130,7 @@ Sburb.Character.prototype.handleFollowing = function(curRoom){
 			this.moveNone();
 		}
 	}
-}
+};
 
 //impulse character to move up
 Sburb.Character.prototype.moveUp = function(movingSideways){
@@ -142,7 +142,7 @@ Sburb.Character.prototype.moveUp = function(movingSideways){
 		this.vx*=2/3;
 		this.vy = -this.speed*2/3;
 	}
-}
+};
 
 //impulse character to move down
 Sburb.Character.prototype.moveDown = function(movingSideways){
@@ -154,21 +154,21 @@ Sburb.Character.prototype.moveDown = function(movingSideways){
 		this.vx*=2/3;
 		this.vy = this.speed*2/3;
 	}
-}
+};
 
 //impulse character to move left
 Sburb.Character.prototype.moveLeft = function(){
 	this.facing = "Left";
 	this.walk();
 	this.vx = -this.speed; this.vy = 0;
-}
+};
 
 //impulse character to move right
 Sburb.Character.prototype.moveRight = function(){
 	this.facing = "Right";
 	this.walk();
 	this.vx = this.speed; this.vy = 0;
-}
+};
 
 //impulse character to stand still
 Sburb.Character.prototype.moveNone = function(){
@@ -176,17 +176,17 @@ Sburb.Character.prototype.moveNone = function(){
 		this.idle();
 		this.vx = 0; this.vy = 0;
 	}
-}
+};
 
 //make character walk
 Sburb.Character.prototype.walk = function(){
 	this.startAnimation("walk"+this.facing);
-}
+};
 
 //make character idle
 Sburb.Character.prototype.idle = function(){
 	this.startAnimation("idle"+this.facing);
-}
+};
 
 //behave as an NPC
 Sburb.Character.prototype.becomeNPC = function(){
@@ -194,7 +194,7 @@ Sburb.Character.prototype.becomeNPC = function(){
 	this.animations.walkBack.frameInterval = 12;
 	this.animations.walkLeft.frameInterval = 12;
 	this.animations.walkRight.frameInterval = 12;
-}
+};
 
 //behave as a PC
 Sburb.Character.prototype.becomePlayer = function(){
@@ -202,7 +202,7 @@ Sburb.Character.prototype.becomePlayer = function(){
 	this.animations.walkBack.frameInterval = 4;
 	this.animations.walkLeft.frameInterval = 4;
 	this.animations.walkRight.frameInterval = 4;
-}
+};
 
 //parse key inputs into actions
 Sburb.Character.prototype.handleInputs = function(pressed, order){
@@ -220,7 +220,7 @@ Sburb.Character.prototype.handleInputs = function(pressed, order){
     }else{
     	movingSideways = false;
     }
-    var most  = Math.max(up, down, none);
+    most  = Math.max(up, down, none);
     var movingVertical = true;
     if(down == most) {
         this.moveDown(movingSideways);
@@ -234,7 +234,7 @@ Sburb.Character.prototype.handleInputs = function(pressed, order){
         this.moveNone();
     }
 	this.handledInput = 2;
-}
+};
 
 //have character try to move through room
 Sburb.Character.prototype.tryToMove = function(vx,vy,room){
@@ -337,7 +337,7 @@ Sburb.Character.prototype.tryToMove = function(vx,vy,room){
 		}
 	}
 	return true;
-}
+};
 
 Sburb.Character.prototype.follow = function(sprite){
 	while(sprite.follower!=null){
@@ -348,7 +348,7 @@ Sburb.Character.prototype.follow = function(sprite){
 	this.followBuffer = [];
 	this.lastLeaderPos = {};
 	this.collidable = false;
-}
+};
 
 Sburb.Character.prototype.unfollow = function(){
 	if(this.following){
@@ -363,7 +363,7 @@ Sburb.Character.prototype.unfollow = function(){
 		this.collidable = true;
 		this.becomeNPC();
 	}
-}
+};
 
 //get locations character wishes to query for actions
 Sburb.Character.prototype.getActionQueries = function(){
@@ -387,7 +387,7 @@ Sburb.Character.prototype.getActionQueries = function(){
 		queries.push({x:this.x-(this.width/2+15),y:this.y-this.height/2});
 	}
 	return queries;
-}
+};
 
 //serialize character to XML
 Sburb.Character.prototype.serialize = function(output){
@@ -427,13 +427,13 @@ Sburb.Character.prototype.serialize = function(output){
 
 	output = output.concat("\n</character>");
 	return output;
-}
+};
 
 
 
 Sburb.Character.prototype.isNPC = function(){
 	return this.animations.walkFront.frameInterval == 12;
-}
+};
 
 
 
@@ -464,7 +464,7 @@ Sburb.parseCharacter = function(charNode, assetFolder) {
   			newChar.follow(following);
   		}
   	}
-  	var temp = attributes.getNamedItem("follower");
+  	temp = attributes.getNamedItem("follower");
   	if(temp){
   		var follower = Sburb.sprites[temp.value];
   		if(follower){
@@ -480,7 +480,7 @@ Sburb.parseCharacter = function(charNode, assetFolder) {
   	newChar.startAnimation(attributes.getNamedItem("state").value);
   	newChar.facing = attributes.getNamedItem("facing").value;
 	return newChar;
-}
+};
 
 
 

@@ -26,7 +26,7 @@ events.spriteProperty = function(info) {
 	   (query.indexOf("GREATER") > -1 && (token="GREATER"))){
 		this.trigger = function(entity,property,target){
 			return entity[property]>target;
-		};	
+		};
 	}else if((query.indexOf("<")>-1 && (token="<")) ||
 	         (query.indexOf("LESS") > -1 && (token="LESS"))){
 		this.trigger = function(entity,property,target){
@@ -36,12 +36,12 @@ events.spriteProperty = function(info) {
 		token = "!=";
 		this.trigger = function(entity,property,target){
 			return entity[property]!=target;
-		};				
+		};
 	}else if(query.indexOf("=")>-1){
 		token = "=";
 		this.trigger = function(entity,property,target){
 			return entity[property]==target;
-		};		
+		};
 	}
 	var queryParts = query.split(token);
 	var property = queryParts[0].trim();
@@ -53,14 +53,14 @@ events.spriteProperty = function(info) {
 		} else{
 			this.entity = Sburb.sprites[params[1]];
 		}
-	}	
+	};
 	this.checkCompletion = function(){
 		var entity = this.entity;
 		if(this.entity=="char"){
 			entity = Sburb.char;
 		}
 		return this.trigger(entity,property,target);
-	}
+	};
 };
 
 //Check if the given sprite is inside a box
@@ -77,14 +77,14 @@ events.inBox = function(info) {
 		}else{
 			this.entity = Sburb.sprites[params[1]];
 		}
-	}
+	};
 	this.checkCompletion = function(){
 		var entity = this.entity;
 		if(this.entity=="char"){
 			entity = Sburb.char;
 		}
 		return entity.x >= x && entity.y >= y && entity.x <= x+width && entity.y <= y+height;
-	}
+	};
 };
 
 events.inBox2 = function(info){
@@ -98,7 +98,7 @@ events.inBox2 = function(info){
 	var width = Math.abs(x1-x2);
 	var height = Math.abs(y1-y2);
 	return new events.inBox("inBox,"+params[1]+","+x+","+y+","+width+","+height);
-}
+};
 
 //Check if a certain interval of time has elapsed
 //syntax: time
@@ -106,14 +106,14 @@ events.time = function(info) {
 	var params = parseParams(info);
 	this.reset = function() {
 		this.time = parseInt(params[1]);
-	}
+	};
 	this.checkCompletion = function(){
 		this.time--;
 		return this.time<=0;
 	};
 	this.serialize = function(){
 		return "time,"+this.time;
-	}
+	};
 };
 
 //Check if the sprite's animation has played
@@ -122,7 +122,7 @@ events.played = function(info) {
 	var params = parseParams(info);
 	this.reset = function() {
 		this.entity = Sburb.sprites[params[1]];
-	}
+	};
 	this.checkCompletion = function(){
 		var entity = this.entity;
 		if(this.entity=="char"){
@@ -138,14 +138,14 @@ events.movie = function(info) {
 	var params = parseParams(info);
 	this.reset = function() {
 		this.movie = window.document.getElementById("movie"+params[1]);
-	}
+	};
 	this.checkCompletion = function(){
 		if(this.movie && this.movie.currentTime > 0 && this.movie.paused && this.movie.ended && this.movie.readyState < 3){
 			Sburb.commands.removeMovie(params[1]);
 			return true;
 		}
 		return false;
-	}
+	};
 };
 
 //check if the game state meets a certain condition
@@ -173,38 +173,38 @@ events.gameState = function(info) {
  		token = "=";
 		this.trigger = function(property,target){
 			return Sburb.gameState[property]==target;
-		};		
+		};
 	}
 	var queryParts = query.split(token);
 	var property = queryParts[0].trim();
 	var target = queryParts[1].trim();
 	this.reset = function() {
 		// pass
-	}	
+	};
 	this.checkCompletion = function(){
 		return this.trigger(property,target);
-	}
-};	
+	};
+};
 
 //check if the player is nudging the game forward (space or mouse)
 //syntax: none
 events.nudge = function(info){
-	this.reset = function(){ } //do nothing
+	this.reset = function(){ }; //do nothing
 	this.checkCompletion = function(){
 		return Sburb.Keys.space || Sburb.Mouse.down;
-	}
-}
+	};
+};
 
 //check that there are no pending or active actions on the queue
 //syntax: none
 events.noActions = function(info){
 	var params = parseParams(info);
-	this.reset = function(){ } //do nothing
+	this.reset = function(){ }; //do nothing
 	this.checkCompletion = function(){
 		var queue = params.length>0 ? Sburb.getActionQueueById(params[1]) : Sburb;
 		return !queue || !queue.curAction;
-	}
-}
+	};
+};
 
 //check if two sprites are near each other
 //syntax spriteName1, spriteName2, distance (px)
@@ -214,15 +214,15 @@ events.withinRange = function(info){
 	var spriteName2 = params[2];
 	var dist = parseFloat(params[3]);
 
-	this.reset = function(){ } //do nothing
+	this.reset = function(){ }; //do nothing
 	this.checkCompletion = function(){
 			var sprite1 = Sburb.parseCharacterString(spriteName1);
 			var sprite2 = Sburb.parseCharacterString(spriteName2);
 			var xDist = sprite1.x-sprite2.x;
 			var yDist = sprite1.y-sprite2.y;
 			return Math.sqrt(xDist*xDist + yDist*yDist) <= dist;
-	}
-}
+	};
+};
 
 Sburb.events = events;
 return Sburb;

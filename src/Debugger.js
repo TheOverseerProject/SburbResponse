@@ -39,7 +39,7 @@ Sburb.Debugger = function() {
         "variant2":  "#FF6600",
         "variant1":  "#FF6600",
         "variant12": "#FF6600",
-        "variant0":  "#CC0000",
+        "variant0":  "#CC0000"
     };
     // Run tests
     this.tests["Audio Support"] = Sburb.tests.audio ? "success" : "failure";
@@ -51,7 +51,7 @@ Sburb.Debugger = function() {
     this.XMLHttpRequest = window.XMLHttpRequest; // Save real XMLHttpRequest
     window.XMLHttpRequest = function() { return new Sburb.XMLHttpRequest(); }; // Replace real XMLHttpRequest
     window.addEventListener("error",function(e) { that.errors.push({"type":e.type,"text":e.message,"url":e.filename,"line":e.lineno,"time":e.timeStamp});},false);
-}
+};
 
 Sburb.Debugger.prototype.handleInputs = function(pressed) {
     if(pressed[Sburb.Keys.tilde] && !this.tilde) {
@@ -62,13 +62,10 @@ Sburb.Debugger.prototype.handleInputs = function(pressed) {
         this.space = true;
         this.sendDebugReport();
     }
-    if(!pressed[Sburb.Keys.tilde])
-        this.tilde = false;
-    if(!pressed[Sburb.Keys.space])
-        this.space = false;
-    if(pressed[Sburb.Keys.escape])
-        this.open = false;
-}
+    if(!pressed[Sburb.Keys.tilde]) { this.tilde = false; }
+    if(!pressed[Sburb.Keys.space]) { this.space = false; }
+    if(pressed[Sburb.Keys.escape]) { this.open = false; }
+};
 
 Sburb.Debugger.prototype.draw = function() {
     // Track FPS
@@ -113,7 +110,7 @@ Sburb.Debugger.prototype.draw = function() {
         Sburb.stage.textAlign = "right";
         Sburb.stage.font="bold 18px Verdana";
         for(var test in this.tests) {
-            if(!this.tests.hasOwnProperty(test)) continue;
+            if(!this.tests.hasOwnProperty(test)){ continue; }
             var color = this.tests[test];
             var width = Sburb.stage.measureText(test).width;
             Sburb.stage.fillStyle = this.colors[color];
@@ -143,7 +140,7 @@ Sburb.Debugger.prototype.draw = function() {
         Sburb.stage.textAlign = "center";
         Sburb.stage.fillStyle = "#000000";
     }
-}
+};
 
 Sburb.Debugger.prototype.sendDebugReport = function() {
     var div = document.createElement('div');
@@ -177,7 +174,7 @@ Sburb.Debugger.prototype.sendDebugReport = function() {
     div.appendChild(form);
     Sburb.Game.parentNode.appendChild(div);
     textbox.focus();
-}
+};
 
 Sburb.Debugger.prototype.submitForm = function() {
     var div = document.getElementById("sburb_debug_report");
@@ -185,30 +182,30 @@ Sburb.Debugger.prototype.submitForm = function() {
     Sburb.debugger.getImg = true;
     div.parentNode.removeChild(div);
     return false;
-}
+};
 
 Sburb.Debugger.prototype.gotImg = function() {
     var debug = {
         "fps": this.fps,
         "errors": this.errors,
         "tests": this.tests,
-        "xhrs": this.xhrs,
+        "xhrs": this.xhrs
     };
     var raw = {
         "debugger": JSON.stringify(debug),
         "canvas": this.img.substr(22), // Cut off "data:image/png;base64,"
         "report": this.report,
         "url": location.href,
-        "save": Sburb.serialize(Sburb),
+        "save": Sburb.serialize(Sburb)
     };
     var list = [];
     var data = "";
     for(k in raw) {
-        if(!raw.hasOwnProperty(k)) continue;
+        if(!raw.hasOwnProperty(k)){ continue; }
         list.push(encodeURIComponent(k)+"="+encodeURIComponent(raw[k]));
-    };
+    }
     data = list.join("&"); // Why do I have to do this myself? Come on javascript.
-    
+
     var xhr = new XMLHttpRequest();
     xhr.open("POST",this.url,true);
     xhr.setRequestHeader('Content-Type', "application/x-www-form-urlencoded");
@@ -223,11 +220,11 @@ Sburb.Debugger.prototype.gotImg = function() {
         } else {
             console.debug("Bug report failed to send.");
         }
-    }
+    };
     xhr.onerror = function() { console.debug("Bug report failed to send."); };
     xhr.onabort = function() { console.debug("Bug report failed to send."); };
     xhr.send(data);
-}
+};
 
 // ===================
 // = Replace Console =
@@ -244,38 +241,38 @@ Sburb.Console = function() {
         "error": 1,
         "exception": 1
     };
-    var isFunction = function(obj) { return obj && {}.toString.call(obj) === "[object Function]"; }
+    var isFunction = function(obj) { return obj && {}.toString.call(obj) === "[object Function]"; };
     var addError = function(type,args) {
         var largs = Array.prototype.slice.call(args);
         Sburb.debugger.errors.push({type:type,text:largs.join(', ')});
-    }
+    };
     var proxy = function(method, args) {
         return console[method].apply(console, args); // This breaks in IE
-    }
+    };
     // Import all of console
     for (var prop in console) {
-        if (prop in ignore) continue;
+        if (prop in ignore){ continue; }
         try {
             if (isFunction(console[prop])) {
                 if (typeof this[prop] == "undefined") {
                     this[prop] = (function(name, func){
                         return function() { return func(name, arguments); };
                     })(prop, proxy);
-                } 
-            }
-            else
-                this[prop] = console[prop];
+                }
+            } else {
+         		this[prop] = console[prop];
+			}
         } catch(E) {}
     }
     // Override logging functions
-    this.log       = function() { addError("log",arguments);       return proxy("log",arguments);       }
-    this.debug     = function() { addError("debug",arguments);     return proxy("debug",arguments);     }
-    this.info      = function() { addError("info",arguments);      return proxy("info",arguments);      }
-    this.warn      = function() { addError("warn",arguments);      return proxy("warn",arguments);      }
-    this.error     = function() { addError("error",arguments);     return proxy("error",arguments);     }
-    this.exception = function() { addError("exception",arguments); return proxy("exception",arguments); }
+    this.log       = function() { addError("log",arguments);       return proxy("log",arguments);       };
+    this.debug     = function() { addError("debug",arguments);     return proxy("debug",arguments);     };
+    this.info      = function() { addError("info",arguments);      return proxy("info",arguments);      };
+    this.warn      = function() { addError("warn",arguments);      return proxy("warn",arguments);      };
+    this.error     = function() { addError("error",arguments);     return proxy("error",arguments);     };
+    this.exception = function() { addError("exception",arguments); return proxy("exception",arguments); };
     return this;
-}
+};
 
 // ==========================
 // = Replace XMLHttpRequest =
@@ -329,24 +326,24 @@ Sburb.XMLHttpRequest = function() {
     };
     var updateSelfProperties = function() {
         for(var prop in xhr) {
-            if (prop in ignoreSelf) continue;
+            if (prop in ignoreSelf){ continue; }
             try {
                 if(xhr[prop] && !isFunction(xhr[prop])) {
                     self[prop] = xhr[prop];
                 }
             } catch(E) {}
         }
-    }
+    };
     var updateXHRProperties = function() {
         for(var prop in self) {
-            if (prop in ignoreXHR) continue;
+            if (prop in ignoreXHR){ continue; }
             try {
                 if(self[prop] && !xhr[prop]) {
                     xhr[prop] = self[prop];
                 }
             } catch(E) {}
         }
-    }
+    };
     var finishXHR = function() {
         var duration = new Date().getTime() - self.reqStart;
         var success = xhr.status == 200 || xhr.status == 0;
@@ -360,8 +357,9 @@ Sburb.XMLHttpRequest = function() {
             if (match) {
                 var name = match[1];
                 var value = match[2];
-                if (name == "Content-Type")
+                if (name == "Content-Type"){
                     self.spy.mimeType = value;
+				}
                 self.spy.responseHeaders.push({name: name, value: value});
             }
         }
@@ -371,9 +369,10 @@ Sburb.XMLHttpRequest = function() {
         self.spy.statusText = status;
         updateSelfProperties();
         Sburb.debugger.xhrs.push(self.spy);
-        if(!success)
+        if(!success){
             console.warn("XHR for "+self.spy.url+" failed");
-    }
+		}
+    };
     var handleStateChange = function() {
         self.readyState = xhr.readyState;
         if (xhr.readyState == 4) {
@@ -381,20 +380,22 @@ Sburb.XMLHttpRequest = function() {
             xhr.onreadystatechange = function(){};
         }
         self.onreadystatechange();
-    }
+    };
     // Overwrite specific functions
     this.open = function(method, url, async, user, password) {
         updateSelfProperties();
         self.spy.method = method;
         self.spy.url = url;
         self.spy.async = async;
-        if (async)
+        if (async){
             xhr.onreadystatechange = handleStateChange;
-        if (this.supportsApply)
+		}
+        if (this.supportsApply){
             xhr.open.apply(xhr, arguments);
-        else
+        } else {
             xhr.open(method, url, async, user, password);
-    }
+		}
+    };
     this.send = function(data) {
         self.spy.data = data;
         self.reqStart = new Date().getTime();
@@ -402,40 +403,40 @@ Sburb.XMLHttpRequest = function() {
         try {
             xhr.send(data);
         } catch(e) {
-            throw e; 
+            throw e;
         } finally {
             if (!self.spy.async) {
                 self.readyState = xhr.readyState;
                 finishXHR();
             }
         }
-    }  
+    };
     this.setRequestHeader = function(header, value) {
         self.spy.requestHeaders.push({name: header, value: value});
         return xhr.setRequestHeader(header, value);
-    }    
+    };
     this.abort = function() {
         xhr.abort();
         updateSelfProperties();
         handleRequestStatus(false, "Aborted");
-    }
+    };
     // Import XHR stuff
     for (var prop in xhr) {
-        if (prop in ignoreSelf) continue;
+        if (prop in ignoreSelf){ continue; }
         try {
             if (isFunction(xhr[prop])) {
-                if (typeof self[prop] == "undefined") {
+                if (typeof self[prop] === "undefined") {
                     self[prop] = (function(name, xhr){
                         return this.supportsApply ? function() { return xhr[name].apply(xhr, arguments); } : function(a,b,c,d,e) { return xhr[name](a,b,c,d,e); };
                     })(prop, xhr);
-                } 
-            }
-            else
+                }
+            } else {
                 self[prop] = xhr[prop];
+			}
         } catch(E) {}
     }
     return this;
-}
+};
 
 return Sburb;
 })(Sburb || {});

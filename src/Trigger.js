@@ -15,7 +15,7 @@ Sburb.Trigger = function(info,action,followUp,restart,detonate,operator){
 	if(typeof info == "string"){
 		info = [info];
 	}
-	
+
 	this.info = info;
 	this.followUp = followUp?followUp:null;
 	this.action = action?action:null;
@@ -23,7 +23,7 @@ Sburb.Trigger = function(info,action,followUp,restart,detonate,operator){
 	this.detonate = detonate?detonate:false;
 	this.operator = operator?operator.toUpperCase():"AND";
 	this.waitFor = null;
-	
+
 	this.events = [];
 	for(var i=0;i<info.length;i++){
 		var inf = this.info[i].trim();
@@ -33,18 +33,18 @@ Sburb.Trigger = function(info,action,followUp,restart,detonate,operator){
 		this.events[i] = new Sburb.events[type](inf);
 	}
 	this.reset();
-}
+};
 
 //parse the trigger info into an actual event to watch
 Sburb.Trigger.prototype.reset = function(){
 	for(var i=0; i<this.events.length; i++){
 		this.events[i].reset();
 	}
-}
+};
 
 Sburb.Trigger.prototype.checkCompletion = function() {
 	return this["operator"+this.operator]();
-}
+};
 
 //check if the trigger has been satisfied
 Sburb.Trigger.prototype.tryToTrigger = function(){
@@ -74,7 +74,7 @@ Sburb.Trigger.prototype.tryToTrigger = function(){
 		}
 		return this.detonate;
 	}
-}
+};
 
 //Serialize the Trigger to XML
 Sburb.Trigger.prototype.serialize = function(output){
@@ -98,7 +98,7 @@ Sburb.Trigger.prototype.serialize = function(output){
 	}
 	output = output.concat("\n</trigger>");
 	return output;
-}
+};
 
 Sburb.Trigger.prototype.operatorAND = function(){
 	var result = true;
@@ -106,7 +106,7 @@ Sburb.Trigger.prototype.operatorAND = function(){
 		result = result && this.events[i].checkCompletion();
 	}
 	return result;
-}
+};
 
 Sburb.Trigger.prototype.operatorOR = function(){
 	var result = false;
@@ -114,7 +114,7 @@ Sburb.Trigger.prototype.operatorOR = function(){
 		result = result || this.events[i].checkCompletion();
 	}
 	return result;
-}
+};
 
 Sburb.Trigger.prototype.operatorXOR = function(){
 	var result = false;
@@ -128,15 +128,15 @@ Sburb.Trigger.prototype.operatorXOR = function(){
 		}
 	}
 	return result;
-}
+};
 
 Sburb.Trigger.prototype.operatorNAND = Sburb.Trigger.prototype.operatorNOT = function(){
 	return !this.operatorAND();
-}
+};
 
 Sburb.Trigger.prototype.operatorNOR = function(){
 	return !this.operatorOR();
-}
+};
 
 
 ////////////////////////////////////////on
@@ -154,7 +154,7 @@ Sburb.parseTrigger = function(triggerNode){
 			info[i] = unescape(info[i]);
 		}
 		var actions = triggerNode.getElementsByTagName("action");
-		
+
 		var action = null;
 		var restart = false;
 		var detonate = false;
@@ -165,9 +165,9 @@ Sburb.parseTrigger = function(triggerNode){
 		restart = attributes.getNamedItem("restart")?attributes.getNamedItem("restart").value=="true":restart;
 		detonate = attributes.getNamedItem("detonate")?attributes.getNamedItem("detonate").value=="true":detonate;
 		operator = attributes.getNamedItem("operator")?attributes.getNamedItem("operator").value:operator;
-		
+
 		var trigger = new Sburb.Trigger(info,action,null,restart,detonate,operator);
-		
+
 		if(!firstTrigger){
 			firstTrigger = trigger;
 		}
@@ -187,14 +187,14 @@ Sburb.parseTrigger = function(triggerNode){
 		if(!found){
 			break;
 		}
-	}while(triggerNode)
+	}while(triggerNode);
 	return firstTrigger;
-}
+};
 
 
 
 function getNodeText(xmlNode){
-  if(!xmlNode) return [];
+  if(!xmlNode){ return []; }
   var outputs = [];
   for(var i=0;i<xmlNode.childNodes.length;i++){
   	var child = xmlNode.childNodes[i];

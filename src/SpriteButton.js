@@ -23,14 +23,14 @@ Sburb.SpriteButton = function(name,x,y,width,height,sheet,dx,dy,action){
 	}
 
 	this.startAnimation("state0");
-}
+};
 
 Sburb.SpriteButton.prototype = new Sburb.Sprite();
 
 Sburb.SpriteButton.prototype.update = function(){
 	Sburb.Sprite.prototype.update.call(this);
 	this.updateMouse();
-}
+};
 
 //update button in relation to mouse state
 Sburb.SpriteButton.prototype.updateMouse = function(){
@@ -70,11 +70,11 @@ Sburb.SpriteButton.prototype.updateMouse = function(){
 	if(this.clicked && this.action){
 		Sburb.performAction(this.action);
 	}
-}
+};
 
 Sburb.SpriteButton.prototype.setState = function(state){
 	this.startAnimation("state"+state);
-}
+};
 
 //serialize this SpriteButton to XML
 Sburb.SpriteButton.prototype.serialize = function(output){
@@ -90,7 +90,7 @@ Sburb.SpriteButton.prototype.serialize = function(output){
 	}
 	output = output.concat("</spritebutton>");
 	return output;
-}
+};
 
 
 //move the specified sprite towards the specified location at the specified speed
@@ -114,7 +114,7 @@ Sburb.SpriteButton.prototype.moveToward = function(sprite,speed){
 		sprite.y = sprite.pos.y;
 	}
 	return sprite.y == sprite.pos.y && sprite.x == sprite.pos.x;
-}
+};
 
 
 
@@ -140,7 +140,7 @@ Sburb.parseSpriteButton = function(button){
   		newButton.action = newAction;
   	}
   	return newButton;
-}
+};
 
 
 

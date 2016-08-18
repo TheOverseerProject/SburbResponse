@@ -1,11 +1,11 @@
 // String trim polyfill
-if(typeof String.prototype.trim !== 'function') {
+if(typeof String.prototype.trim !== "function") {
   String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, '');
-  }
+    return this.replace(/^\s+|\s+$/g, "");
+  };
 }
 // Array Remove - By John Resig (MIT Licensed)
-if(typeof Array.prototype.remove !== 'function') {
+if(typeof Array.prototype.remove !== "function") {
     Array.prototype.remove = function(from, to) {
       var rest = this.slice((to || from) + 1 || this.length);
       this.length = from < 0 ? this.length + from : from;
@@ -21,11 +21,12 @@ if(typeof Array.prototype.contains !== 'function') {
 // Not a polyfill but lets add it anyway
 Array.prototype.destroy = function(obj) {
     var i = this.indexOf(obj);
-    if(i >= 0)
+    if(i >= 0){
         this.remove(i);
+	}
 };
 // window.atob and window.btoa polyfill
-(function(){var a=typeof window!="undefined"?window:exports,b="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",c=function(){try{document.createElement("$")}catch(a){return a}}();a.btoa||(a.btoa=function(a){for(var d,e,f=0,g=b,h="";a.charAt(f|0)||(g="=",f%1);h+=g.charAt(63&d>>8-f%1*8)){e=a.charCodeAt(f+=.75);if(e>255)throw c;d=d<<8|e}return h}),a.atob||(a.atob=function(a){a=a.replace(/=+$/,"");if(a.length%4==1)throw c;for(var d=0,e,f,g=0,h="";f=a.charAt(g++);~f&&(e=d%4?e*64+f:f,d++%4)?h+=String.fromCharCode(255&e>>(-2*d&6)):0)f=b.indexOf(f);return h})})();
+(function(){var a=typeof window!="undefined"?window:exports,b="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",c=function(){try{document.createElement("$");}catch(a){return a;}}();a.btoa||(a.btoa=function(a){for(var d,e,f=0,g=b,h="";a.charAt(f|0)||(g="=",f%1);h+=g.charAt(63&d>>8-f%1*8)){e=a.charCodeAt(f+=0.75);if(e>255)throw c;d=d<<8|e}return h}),a.atob||(a.atob=function(a){a=a.replace(/=+$/,"");if(a.length%4==1)throw c;for(var d=0,e,f,g=0,h="";f=a.charAt(g++);~f&&(e=d%4?e*64+f:f,d++%4)?h+=String.fromCharCode(255&e>>(-2*d&6)):0)f=b.indexOf(f);return h})})();
 
 var Sburb = (function(Sburb){
 
@@ -43,7 +44,7 @@ var simulationTimestep = 1000 / 30,
     running = false,
     started = false,
     panic = false,
-    windowOrRoot = typeof window === 'object' ? window : Sburb,
+    windowOrRoot = typeof window === "object" ? window : Sburb,
 
 
     // The polyfill is adapted from the MIT-licensed
@@ -96,7 +97,7 @@ Sburb.drawLoop = {
     },
 
     setMaxAllowedFPS: function(fps) {
-        if (typeof fps === 'undefined') {
+        if (typeof fps === "undefined") {
             fps = Infinity;
         }
         if (fps === 0) {
@@ -160,7 +161,7 @@ Sburb.drawLoop = {
 
     isRunning: function() {
         return running;
-    },
+    }
 };
 
 function animate(timestamp) {
@@ -198,11 +199,11 @@ function animate(timestamp) {
 }
 
 // AMD support
-if (typeof define === 'function' && define.amd) {
+if (typeof define === "function" && define.amd) {
     define(Sburb.drawLoop);
 }
 // CommonJS support
-else if (typeof module === 'object' && module !== null && typeof module.exports === 'object') {
+else if (typeof module === "object" && module !== null && typeof module.exports === "object") {
     module.exports = Sburb.drawLoop;
 }
 
@@ -211,23 +212,23 @@ Sburb.end = function end(panic) {
     if (panic) {
         var discardedTime = Math.round(Sburb.drawLoop.resetFrameDelta());
         purgeKeys();
-        console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+        console.warn("Main loop panicked, probably because the browser tab was put in the background. Discarding " + discardedTime + "ms");
     }
-}
+};
 
 
 
 //650x450 screen
 Sburb.Keys = {backspace:8,tab:9,enter:13,shift:16,ctrl:17,alt:18,escape:27,space:32,left:37,up:38,right:39,down:40,w:87,a:65,s:83,d:68,tilde:192};
 
-Sburb.name = 'Jterniabound';
-Sburb.version = '1.0';
+Sburb.name = "SMHD";
+Sburb.version = "2.0";
 Sburb.Container = null; //"deploy" div
 Sburb.Game = null; //the game div
 Sburb.Map = null; //the map div
 Sburb.Stage = null; //the canvas, we're gonna load it up with a bunch of flash-like game data like fps and scale factors
 Sburb.Bins = {}; //the various bin divs
-Sburb.cam = {x:0,y:0}
+Sburb.cam = {x:0,y:0};
 Sburb.crashed = false; // In case of catastrophic failure
 Sburb.stage = null; //its context
 Sburb.gameState = {};
@@ -250,7 +251,7 @@ Sburb.destFocus = null;
 Sburb.choices = null; //the choices for where the player currently is
 Sburb.inputDisabled = false; //disables player-control
 Sburb.curAction = null; //the current action being performed
-Sburb.actionQueues = [] //additional queues for parallel actions
+Sburb.actionQueues = []; //additional queues for parallel actions
 Sburb.nextQueueId = 0; //the next created actionQueue, specified without a id, will get this number and increment it
 Sburb.bgm = null; //the current background music
 Sburb.hud = null; //the hud; help and sound buttons
@@ -283,11 +284,11 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
         xhr.responseType = "blob";
         xhr.onload = function() {
             if((this.status == 200 || this.status == 0) && this.response) {
-                Modernizr.addTest('xhrblob', function () { return true; }); // TODO: Test if this.response is actually a blob?
+                Modernizr.addTest('xhrblob', function () { return true; });
             } else {
                 Modernizr.addTest('xhrblob', function () { return false; });
             }
-        }
+        };
         xhr.onabort = function() { Modernizr.addTest('xhrblob', function () { return false; }); };
         xhr.onerror = function() { Modernizr.addTest('xhrblob', function () { return false; }); };
         xhr.send();
@@ -299,16 +300,16 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
         xhr.onload = function() {
             if((this.status == 200 || this.status == 0) && this.response) {
                 var arr = this.response;
-                Modernizr.addTest('xhrarraybuffer', function () { return true; }); // TODO: test if this.response is actually an arraybuffer?
+                Modernizr.addTest('xhrarraybuffer', function () { return true; });
             } else {
                 Modernizr.addTest('xhrarraybuffer', function () { return false; });
             }
-        }
+        };
         xhr.onabort = function() { Modernizr.addTest('xhrarraybuffer', function () { return false; }); };
         xhr.onerror = function() { Modernizr.addTest('xhrarraybuffer', function () { return false; }); };
         xhr.send();
       } catch (e) {
-        alert(e.message + "\n\nIf you are running Google Chrome, you need to run it with the -allow-file-access-from-files switch to load this.")
+        alert(e.message + "\n\nIf you are running Google Chrome, you need to run it with the -allow-file-access-from-files switch to load this.");
       }
 
         Sburb.firedAsync = true;
@@ -326,11 +327,11 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
 
     // Use Modernizr to test compatibility
     var errors = [];
-    if(!Modernizr.fontface)                                     errors.push("- Lack of CSS @font-face support.");
-    if(!Modernizr.canvas)                                       errors.push("- Lack of canvas support.");
-    if(!Modernizr.canvastext)                                   errors.push("- Lack of canvas text support.");
-    if(!Modernizr.json)                                         errors.push("- Lack of JSON support.");
-    if(!Modernizr.xmlserializer)                                errors.push("- Lack of XMLSerializer support.");
+    if(!Modernizr.fontface){ errors.push("- Lack of CSS @font-face support."); }
+  	if(!Modernizr.canvas){ errors.push("- Lack of canvas support."); }
+  	if(!Modernizr.canvastext){ errors.push("- Lack of canvas text support."); }
+  	if(!Modernizr.json){ errors.push("- Lack of JSON support."); }
+  	if(!Modernizr.xmlserializer){ errors.push("- Lack of XMLSerializer support."); }
 
     if(errors.length) {
         // Display what failed
@@ -391,13 +392,14 @@ Sburb.testCompatibility = function(div, levelName, includeDevTools) {
             Sburb.tests.loading = 12; // Load as god knows what, use IE hacks, convert to base 64 and generate Data URI
         }
     }
-}
+};
 
 Sburb.initialize = function(div,levelName,includeDevTools){
     Sburb.crashed = false;
     Sburb.testCompatibility(div, levelName, includeDevTools);
-    if(Sburb.crashed)
+    if(Sburb.crashed){
         return; // Hard crash if the browser is too old. testCompatibility() will handle the error message
+	}
 	Sburb.debugger = new Sburb.Debugger(); // Load debugger first! -- But not quite
 
     var deploy = document.createElement('div');
@@ -446,7 +448,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 
 	//Tap and click events are interlinked
 	hammertime.on('tap', function(e){
-		if(!Sburb.updateLoop) return; // Make sure we are loaded before trying to do things
+		if(!Sburb.updateLoop){ return; }// Make sure we are loaded before trying to do things
 		Sburb.Mouse.down = true; //gets set to false in Sburb.SpriteButton.prototype.updateMouse
 		var point = tapCoords(e,gameCanvas);
 		var mockSpace = {keyCode:Sburb.Keys.space};
@@ -463,8 +465,9 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	//Since older devices emulate mouse clicks as opposed to using some sort of touch API, we want this enabled.
 	//Also laptops with touch screens would be a pain to deal with
 	hammertime.on('press', function(e){
-		if(hasControl())
+		if(hasControl()){
 			mockKeyConfig(e);
+		}
 	});
 
 	hammertime.on('pan', function(e){
@@ -475,8 +478,9 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 	});
 
 	hammertime.on('pressup panend swipe pancancel', function(e) {
-		if(hasControl())
+		if(hasControl()){
 			purgeKeys();
+		}
 	});
 
 	//Mocks up key codes to send to the action queue if moving with touch/mouse input
@@ -485,12 +489,13 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 			var point = tapCoords(e,gameCanvas);
 			var mockKeyCode = getQ(point.x,point.y);
 			for(var i=0; i<mockKeyCode.length; i++){
-				if(!Sburb.pressed[mockKeyCode[i]])
+				if(!Sburb.pressed[mockKeyCode[i]]){
 					Sburb.pressedOrder.push(mockKeyCode[i]);
+				}
 				Sburb.pressed[mockKeyCode[i]] = true;
 			}
 		}
-	};
+	}
 
 	var mapCanvas = document.createElement("canvas");
     mapCanvas.id = "SBURBMapCanvas";
@@ -540,7 +545,7 @@ Sburb.initialize = function(div,levelName,includeDevTools){
 
 	window.addEventListener('resize', resize, false);
 
-}
+};
 
 Sburb.setDimensions = function(width, height) {
     if(width) {
@@ -553,7 +558,7 @@ Sburb.setDimensions = function(width, height) {
         Sburb.Stage.height = height;
         Sburb.Stage.currentHeight = height;
     }
-}
+};
 
 function resize() {
 	var width = window.innerWidth;
@@ -605,15 +610,16 @@ Sburb.update = function update(){
 	handleInputs();
 	handleHud();
 
-	if(!Sburb.loadingRoom)
+	if(!Sburb.loadingRoom){
 	    Sburb.curRoom.update();
+	}
 
 	focusCamera();
 	handleRoomChange();
 	Sburb.dialoger.update();
 	chainAction();
 	updateWait();
-}
+};
 
 Sburb.draw = function draw(){
 	//stage.clearRect(0,0,Stage.width,Stage.height);
@@ -644,7 +650,7 @@ Sburb.draw = function draw(){
 
 	    Sburb.debugger.draw();
 	}
-}
+};
 
 var _onkeydown = function(e){
     if(Sburb.updateLoop && !Sburb.inputDisabled) { // Make sure we are loaded before trying to do things
@@ -673,8 +679,9 @@ var _onkeydown = function(e){
        could throw an exception.
 
        I'm not too worried about it. -Fugi */
-	if(!Sburb.pressed[e.keyCode])
+	if(!Sburb.pressed[e.keyCode]){
 	    Sburb.pressedOrder.push(e.keyCode);
+	}
 	Sburb.pressed[e.keyCode] = true;
     // return true if we want to pass keys along to the browser, i.e. Ctrl-N for a new window
     if(e.altKey || e.ctrlKey || e.metaKey) {
@@ -682,14 +689,15 @@ var _onkeydown = function(e){
 		return true;
     }
     return false;
-}
+};
 
 var _onkeyup = function(e){
     // See _onkeydown for race condition warning
-    if(Sburb.pressed[e.keyCode])
+    if(Sburb.pressed[e.keyCode]){
     	Sburb.pressedOrder.destroy(e.keyCode);
+	}
 	Sburb.pressed[e.keyCode] = false;
-}
+};
 
 function purgeKeys(){
     // See _onkeydown for race condition warning
@@ -700,14 +708,14 @@ function purgeKeys(){
 var _onblur = function(e){
     // See _onkeydown for race condition warning
 	purgeKeys();
-}
+};
 
 Sburb.onMouseMove = function(e,canvas){
     // See _onkeydown for race condition warning
 	var point = relMouseCoords(e,canvas);
 	Sburb.Mouse.x = point.x;
 	Sburb.Mouse.y = point.y;
-}
+};
 
 function relMouseCoords(event,canvas){
     var totalOffsetX = 0;
@@ -719,8 +727,7 @@ function relMouseCoords(event,canvas){
     do{
         totalOffsetX += currentElement.offsetLeft;
         totalOffsetY += currentElement.offsetTop;
-    }
-    while(currentElement = currentElement.offsetParent)
+    } while(currentElement = currentElement.offsetParent);
     canvasX = event.pageX - totalOffsetX;
     canvasY = event.pageY - totalOffsetY;
     return {x:canvasX,y:canvasY};
@@ -910,7 +917,7 @@ Sburb.performAction = function(action, queue){
 	}
 	performActionInQueue(action, Sburb);
 	return null;
-}
+};
 
 function performActionInQueue(action, queue) {
 	var looped = false;
@@ -932,7 +939,7 @@ Sburb.performActionSilent = function(action){
 		info = info.trim();
 	}
 	return Sburb.commands[action.command.trim()](info);
-}
+};
 
 function handleCommandResult(queue,result){
     if(result){
@@ -951,7 +958,7 @@ Sburb.changeRoom = function(newRoom,newX,newY){
 	Sburb.destRoom = newRoom;
 	Sburb.destX = newX;
 	Sburb.destY = newY;
-}
+};
 
 
 
@@ -962,7 +969,7 @@ Sburb.moveSprite = function(sprite,oldRoom,newRoom){
 		newRoom.addSprite(curSprite);
 		curSprite = curSprite.follower;
 	}
-}
+};
 
 
 
@@ -976,7 +983,7 @@ Sburb.setCurRoomOf = function(sprite){
 		    }
 		}
 	}
-}
+};
 
 Sburb.changeBGM = function(newSong) {
     if(newSong){
@@ -991,16 +998,16 @@ Sburb.changeBGM = function(newSong) {
 		Sburb.bgm.stop();
 		Sburb.bgm.play();
     }
-}
+};
 
 Sburb.playEffect = function(effect,x,y){
 	Sburb.curRoom.addEffect(effect.clone(x,y));
-}
+};
 
 Sburb.playSound = function(sound){
 	sound.stop();
 	sound.play();
-}
+};
 
 Sburb.playMovie = function(movie){
 	var name = movie.name;
@@ -1008,7 +1015,7 @@ Sburb.playMovie = function(movie){
 	document.getElementById("movie"+name).play();
 	Sburb.waitFor = new Sburb.Trigger("movie,"+name+",5");
 	Sburb.playingMovie = true;
-}
+};
 
 Sburb.startUpdateProcess = startUpdateProcess;
 Sburb.haltUpdateProcess = haltUpdateProcess;

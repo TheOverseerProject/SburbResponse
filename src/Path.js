@@ -8,28 +8,28 @@ var Sburb = (function(Sburb){
 //constructor
 Sburb.Path = function(){
 	this.points = [];
-}
+};
 
 //add a point to the path
 Sburb.Path.prototype.push = function(point){
 	this.points.push(point);
-}
+};
 
 //Check if the given points are in the path, favouring positively
 Sburb.Path.prototype.queryBatchPos = function(queries,results){
 	for(var query in queries){
-	    if(!queries.hasOwnProperty(query)) continue;
+	    if(!queries.hasOwnProperty(query)){ continue; }
 	    results[query] = results[query] || this.query(queries[query]);
 	}
-}
+};
 
 //Check if the given points are in the path, favouring negatively
 Sburb.Path.prototype.queryBatchNeg = function(queries,results){
 	for(var query in queries){
-	    if(!queries.hasOwnProperty(query)) continue;
+	    if(!queries.hasOwnProperty(query)){ continue; }
 	    results[query] = results[query] && !this.query(queries[query]);
 	}
-}
+};
 
 //Check if the given point is in the path
 Sburb.Path.prototype.query = function(pt){
@@ -41,7 +41,7 @@ Sburb.Path.prototype.query = function(pt){
 		&& (c = !c);
 	}
 	return c;
-}
+};
 
 
 

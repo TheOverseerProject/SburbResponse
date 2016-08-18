@@ -33,7 +33,7 @@ Sprite.prototype.FG_DEPTHING = 2;
 
 Sprite.prototype.addAnimation = function(anim){
 	this.animations[anim.name] = anim;
-}
+};
 
 Sprite.prototype.startAnimation = function(name){
 	if(this.state!=name && this.animations[name]){
@@ -41,7 +41,7 @@ Sprite.prototype.startAnimation = function(name){
 		this.animation.reset();
 		this.state = name;
 	}
-}
+};
 
 Sprite.prototype.update = function(curRoom){
 	if(this.animation){
@@ -51,13 +51,13 @@ Sprite.prototype.update = function(curRoom){
 			this.animation.update();
 		}
 	}
-}
+};
 
 Sprite.prototype.draw = function(){
 	if(this.animation){
 		this.animation.draw(this.x,this.y);
 	}
-}
+};
 
 
 Sprite.prototype.isBehind = function(other){
@@ -66,7 +66,7 @@ Sprite.prototype.isBehind = function(other){
 	}else{
 		return this.depthing<other.depthing;
 	}
-}
+};
 
 Sprite.prototype.collides = function(other,dx,dy){
 	var x = this.x+(dx?dx:0);
@@ -80,7 +80,8 @@ Sprite.prototype.collides = function(other,dx,dy){
 		}
 	}
 	return false;
-}
+};
+
 Sprite.prototype.hitsPoint = function(x,y){
 	if( (this.x-this.width/2 <=x) &&
 		(this.x+this.width/2 >=x) &&
@@ -89,15 +90,15 @@ Sprite.prototype.hitsPoint = function(x,y){
 		return true;
 	}
     return false;
-}
+};
 
 Sprite.prototype.isVisuallyUnder = function(x,y){
 	return this.animation && this.animation.isVisuallyUnder(x-this.x,y-this.y);
-}
+};
 
 Sprite.prototype.addAction = function(action){
 	this.actions.push(action);
-}
+};
 
 Sprite.prototype.removeAction = function(name){
 	for(var i=0;i<this.actions.length;i++){
@@ -106,7 +107,7 @@ Sprite.prototype.removeAction = function(name){
 			return;
 		}
 	}
-}
+};
 
 Sprite.prototype.getActions = function(sprite){
 	var validActions = [];
@@ -119,7 +120,7 @@ Sprite.prototype.getActions = function(sprite){
 		}
 	}
 	return validActions;
-}
+};
 
 Sprite.prototype.getBoundaryQueries = function(dx,dy){
 	var spriteX = this.x+(dx?dx:0);
@@ -142,12 +143,12 @@ Sprite.prototype.getBoundaryQueries = function(dx,dy){
 	this.queries.upMid.x=spriteX;
 	this.queries.upMid.y=spriteY-h;
 	return this.queries;
-}
+};
 
 Sprite.prototype.serialize = function(output){
 	var animationCount = 0;
 	for(var anim in this.animations){
-        if(!this.animations.hasOwnProperty(anim)) continue;
+        if(!this.animations.hasOwnProperty(anim)){ continue; }
         animationCount++;
 	}
 
@@ -157,7 +158,7 @@ Sprite.prototype.serialize = function(output){
 		">");
 
 	for(var anim in this.animations){
-        if(!this.animations.hasOwnProperty(anim)) continue;
+        if(!this.animations.hasOwnProperty(anim)){ continue; }
 		output = this.animations[anim].serialize(output);
 	}
 	for(var i=0; i < this.actions.length; i++){
@@ -165,7 +166,7 @@ Sprite.prototype.serialize = function(output){
 	}
 	output = output.concat("\n</sprite>");
 	return output;
-}
+};
 
 Sprite.prototype.clone = function(newName) {
 	var newSprite = new Sburb.Sprite(newName,this.x,this.y,this.width,this.height,this.dx,this.dy,this.depthing,this.collidable);
@@ -184,7 +185,7 @@ Sprite.prototype.clone = function(newName) {
 	}
 	Sburb.sprites[newName]=newSprite;
 	return newSprite;
-}
+};
 
 
 
@@ -242,7 +243,7 @@ Sburb.parseSprite = function(spriteNode, assetFolder) {
 	newSprite.startAnimation(newState);
 
 	return newSprite;
-}
+};
 
 
 
